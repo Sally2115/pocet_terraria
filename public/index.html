@@ -1,273 +1,433 @@
-<!DOCTYPE html><html lang="ru"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-<title>Pocket Terraria</title><link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@500;700&display=swap" rel="stylesheet">
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>Pocket Terraria - Pixel Edition</title>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
-html,body{margin:0;height:100%;background:#000;overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none;font-family:'Pixelify Sans',system-ui,sans-serif;color:#fff}
-canvas{display:block;width:100%;height:100%}
-.b{position:fixed;width:68px;height:68px;border-radius:16px;background:linear-gradient(#ffffff40,#ffffff18);border:3px solid #fff7;box-shadow:0 4px 0 #0006;font-size:28px;display:flex;align-items:center;justify-content:center;touch-action:none;backdrop-filter:blur(4px);z-index:10}
-.b:active{transform:translateY(3px);box-shadow:none}
-#hp{position:fixed;top:10px;left:10px;width:140px;height:18px;border:3px solid #2a1a0e;border-radius:3px;background:#3a0d0d;box-shadow:0 2px 0 #0008;z-index:10}
-#hpf{height:100%;background:linear-gradient(#ff6b6b,#c62828);width:100%;transition:width 0.1s}
-#on{position:fixed;top:36px;left:10px;font-size:13px;text-shadow:0 1px 3px #000;z-index:10}
-#hb{position:fixed;top:56px;left:0;right:0;display:flex;justify-content:center;gap:4px;flex-wrap:wrap;padding:0 8px;z-index:10}
-.s{width:42px;height:42px;background:linear-gradient(#3b2a1a,#241608);border:3px solid #6b4a2b;border-radius:4px;box-shadow:0 2px 0 #0008;display:flex;align-items:center;justify-content:center;position:relative;font-size:20px}
-.s.on{border-color:#ffd54a;box-shadow:0 0 10px #ffd54a99;transform:translateY(-2px)}
-.s i{width:22px;height:22px;border-radius:3px;display:block}
-.s u{position:absolute;right:2px;bottom:0;font-size:11px;text-decoration:none}
-#cr{position:fixed;top:10px;right:10px;width:52px;height:40px;font-size:22px;border-radius:8px;z-index:10}
-#panel{position:fixed;inset:70px 10px 100px;background:linear-gradient(#2b1d12f2,#1a110af2);border:4px solid #8a5a2b;border-radius:8px;box-shadow:0 8px 30px #000a;padding:10px;overflow:auto;display:none;z-index:20}
-.r{display:flex;justify-content:space-between;align-items:center;padding:8px;border-bottom:1px solid #fff2;font-size:14px}
-.r button{background:linear-gradient(#5bc46a,#2e8b3d);border:2px solid #0006;color:#fff;border-radius:6px;padding:8px 12px;font-size:14px;font-family:inherit}
-.r button:disabled{background:#555;opacity:.6}
-#msg{position:fixed;bottom:120px;left:0;right:0;text-align:center;font-size:16px;pointer-events:none;text-shadow:0 0 4px #000;z-index:10}
-</style></head><body>
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0; width: 100%; height: 100%;
+    background: #000; overflow: hidden; touch-action: none;
+    user-select: none; -webkit-user-select: none;
+    font-family: 'Press Start 2P', monospace; color: #fff;
+  }
+  canvas {
+    display: block; width: 100%; height: 100%;
+    image-rendering: pixelated; image-rendering: crisp-edges;
+  }
+
+  /* --- РЕТРО ИНТЕРФЕЙС --- */
+  #ui-container {
+    position: fixed; inset: 0; pointer-events: none; z-index: 10;
+  }
+  
+  /* Здоровье */
+  #hp-bar {
+    position: absolute; top: 12px; left: 12px;
+    width: 160px; height: 16px; background: #220808;
+    border: 3px solid #5a1818; border-radius: 2px;
+    box-shadow: 0 0 0 2px #000; pointer-events: auto;
+  }
+  #hp-fill {
+    height: 100%; background: #e74c3c; width: 100%;
+    box-shadow: inset 0 -2px 0 #a93226, inset 0 2px 0 #f1948a;
+  }
+  #hp-text {
+    position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+    font-size: 8px; text-shadow: 1px 1px 0 #000; color: #fff;
+  }
+
+  /* Хотбар (панель предметов) */
+  #hotbar {
+    position: absolute; top: 38px; left: 12px;
+    display: flex; gap: 4px; pointer-events: auto;
+  }
+  .slot {
+    width: 36px; height: 36px; background: #2a1f18;
+    border: 3px solid #5c4033; border-radius: 2px;
+    box-shadow: 0 0 0 2px #000; display: flex;
+    align-items: center; justify-content: center;
+    position: relative; cursor: pointer;
+  }
+  .slot.active {
+    border-color: #f1c40f; background: #3d2d23;
+    box-shadow: 0 0 0 2px #000, 0 0 8px #f1c40f88;
+  }
+  .slot-icon { width: 20px; height: 20px; display: block; image-rendering: pixelated; }
+  .slot-count {
+    position: absolute; right: 2px; bottom: 2px;
+    font-size: 7px; text-shadow: 1px 1px 0 #000;
+  }
+
+  /* Кнопки управления */
+  .btn-ctrl {
+    position: absolute; background: #2a1f18;
+    border: 3px solid #5c4033; box-shadow: 0 0 0 2px #000;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; pointer-events: auto; touch-action: none;
+    color: #f1c40f; text-shadow: 1px 1px 0 #000;
+  }
+  .btn-ctrl:active { background: #3d2d23; transform: translateY(2px); }
+  
+  #btn-left { left: 12px; bottom: 16px; width: 56px; height: 56px; }
+  #btn-right { left: 76px; bottom: 16px; width: 56px; height: 56px; }
+  #btn-jump { right: 12px; bottom: 16px; width: 68px; height: 68px; font-size: 18px; }
+  #btn-craft { right: 12px; top: 12px; width: 44px; height: 44px; font-size: 14px; }
+
+  /* Меню крафта */
+  #craft-panel {
+    position: absolute; inset: 70px 12px 90px;
+    background: #1e1510; border: 4px solid #5c4033;
+    box-shadow: 0 0 0 2px #000, inset 0 0 20px #0008;
+    padding: 12px; overflow-y: auto; display: none;
+    pointer-events: auto; z-index: 20;
+  }
+  #craft-panel h3 { font-size: 10px; color: #f1c40f; margin: 0 0 8px; text-shadow: 1px 1px 0 #000; }
+  .craft-row {
+    display: flex; justify-content: space-between; align-items: center;
+    background: #2a1f18; border: 2px solid #3d2d23;
+    padding: 6px; margin-bottom: 6px; font-size: 8px;
+  }
+  .craft-row button {
+    background: #27ae60; border: 2px solid #1e8449;
+    color: #fff; font-family: inherit; font-size: 8px;
+    padding: 6px 10px; cursor: pointer; box-shadow: 0 0 0 1px #000;
+  }
+  .craft-row button:disabled { background: #555; border-color: #333; opacity: 0.6; }
+
+  /* Сообщения */
+  #msg-box {
+    position: absolute; bottom: 90px; left: 0; right: 0;
+    text-align: center; font-size: 9px; color: #f1c40f;
+    text-shadow: 1px 1px 0 #000, -1px -1px 0 #000; pointer-events: none;
+  }
+</style>
+</head>
+<body>
+
 <canvas id="c"></canvas>
-<div id="hp"><div id="hpf"></div></div><div id="on"></div><div id="hb"></div>
-<div class="b" id="cr">🔨</div>
-<div id="panel"></div><div id="msg"></div>
-<div class="b" id="L" style="left:10px;bottom:24px">◀</div>
-<div class="b" id="R" style="left:90px;bottom:24px">▶</div>
-<div class="b" id="J" style="right:10px;bottom:24px;width:84px;height:84px">▲</div>
+
+<div id="ui-container">
+  <div id="hp-bar">
+    <div id="hp-fill"></div>
+    <div id="hp-text">100 / 100</div>
+  </div>
+  
+  <div id="hotbar"></div>
+  
+  <div class="btn-ctrl" id="btn-craft">🔨</div>
+  <div class="btn-ctrl" id="btn-left">◀</div>
+  <div class="btn-ctrl" id="btn-right">▶</div>
+  <div class="btn-ctrl" id="btn-jump">▲</div>
+  
+  <div id="craft-panel"></div>
+  <div id="msg-box"></div>
+</div>
+
 <script>
-const tg=window.Telegram&&Telegram.WebApp;if(tg){tg.ready();tg.expand();try{tg.disableVerticalSwipes()}catch(e){}}
-const W=300,H=130,KEY='pocket_terraria_v3';
-const T={1:{c:'#7a5233',h:1,d:1,n:'Земля'},2:{c:'#7a5233',h:1,d:1,n:'Трава'},3:{c:'#7d7d88',h:3,d:3,n:'Камень'},
-4:{c:'#6a4526',h:1.5,d:8,n:'Ствол'},5:{c:'#2f8a34',h:.3,d:0,n:'Листва'},6:{c:'#c8713a',h:4,d:6,n:'Медная руда'},
-7:{c:'#b9aba0',h:5,d:7,n:'Железная руда'},8:{c:'#a9793f',h:2,d:8,n:'Дерево'},9:{c:'#ffcc55',h:.1,d:9,n:'Факел'},10:{c:'#8a5a2b',h:1,d:10,n:'Верстак'},11:{c:'#6b6b73',h:2,d:11,n:'Печь'},12:{c:'#e8c030',h:6,d:12,n:'Золотая руда'}};
-const IN={1:'Земля',3:'Камень',6:'Медная руда',7:'Железная руда',8:'Дерево',9:'Факел',10:'Верстак',11:'Печь',12:'Золотая руда',20:'Гель',21:'Медный слиток',22:'Железный слиток',23:'Золотой слиток',24:'Корона слизня'};
-const SOLID=new Set([1,2,3,6,7,8,12,10,11,4]);
-let seed=Math.floor(Math.random()*1e9),tiles,surf=[];
-const hash=(x,y)=>{let h=(Math.imul(x,374761393)+Math.imul(y,668265263)+Math.imul(seed,1013904223))|0;h=Math.imul(h^(h>>>13),1274126177);return((h^(h>>>16))>>>0)/4294967295};
-const vn=(x,y)=>{const xi=Math.floor(x),yi=Math.floor(y),xf=x-xi,yf=y-yi,u=xf*xf*(3-2*xf),v=yf*yf*(3-2*yf),a=hash(xi,yi),b=hash(xi+1,yi),c=hash(xi,yi+1),d=hash(xi+1,yi+1);return a+(b-a)*u+(c-a)*v+(a-b-c+d)*u*v};
-const get=(x,y)=>x<0||x>=W||y<0||y>=H?(y<0?0:3):tiles[y*W+x];
-const sol=(x,y)=>x<0||x>=W||y>=H||(y>=0&&SOLID.has(tiles[y*W+x]));
+// WebApp Telegram инициализация
+const tg = window.Telegram && Telegram.WebApp;
+if (tg) { tg.ready(); tg.expand(); try { tg.disableVerticalSwipes(); } catch(e){} }
 
-function gen(){
-  tiles=new Uint8Array(W*H);
-  for(let x=0;x<W;x++){
-    const s=Math.floor(34+(vn(x*.02,0)-.5)*30+(vn(x*.08,5)-.5)*8);
-    surf[x]=s;
-    const dl=6+Math.floor(vn(x*.1,9)*3);
-    for(let y=s;y<H;y++){
-      const d=y-s;let id=d==0?2:d<dl?1:3;
-      if(d>6&&vn(x*.07,y*.09)*.65+vn(x*.2,y*.2+50)*.35>.645)id=0;
-      else if(id==3){if(d>8&&vn(x*.25,y*.25+300)>.73)id=6;else if(d>30&&vn(x*.3+500,y*.3)>.76)id=7;else if(d>60&&vn(x*.3+900,y*.3+40)>.77)id=12}
-      tiles[y*W+x]=id;
+const W = 300, H = 130, KEY = 'pocket_terraria_pixel_v1';
+
+// Блоки и предметы
+const T = {
+  1: { c: '#5d4037', h: 1, d: 1, n: 'Земля' },
+  2: { c: '#4caf50', h: 1, d: 1, n: 'Трава' },
+  3: { c: '#78909c', h: 3, d: 3, n: 'Камень' },
+  4: { c: '#4e342e', h: 1.5, d: 8, n: 'Ствол' },
+  5: { c: '#2e7d32', h: 0.3, d: 0, n: 'Листва' },
+  6: { c: '#d35400', h: 4, d: 6, n: 'Медь' },
+  7: { c: '#bdc3c7', h: 5, d: 7, n: 'Железо' },
+  8: { c: '#8d6e63', h: 2, d: 8, n: 'Дерево' },
+  9: { c: '#f1c40f', h: 0.1, d: 9, n: 'Факел' },
+  10: { c: '#a1887f', h: 1, d: 10, n: 'Верстак' },
+  11: { c: '#546e7a', h: 2, d: 11, n: 'Печь' },
+  12: { c: '#f39c12', h: 6, d: 12, n: 'Золото' }
+};
+
+const IN = { 1:'Земля', 3:'Камень', 6:'Медь', 7:'Железо', 8:'Дерево', 9:'Факел', 10:'Верстак', 11:'Печь', 12:'Золото', 20:'Гель', 21:'Медный слиток', 22:'Железный слиток', 23:'Золотой слиток', 24:'Корона' };
+const SOLID = new Set([1,2,3,4,6,7,8,10,11,12]);
+
+let seed = Math.floor(Math.random() * 1e9), tiles, surf = [];
+
+const hash = (x, y) => {
+  let h = (Math.imul(x, 374761393) + Math.imul(y, 668265263) + Math.imul(seed, 1013904223)) | 0;
+  h = Math.imul(h ^ (h >>> 13), 1274126177);
+  return ((h ^ (h >>> 16)) >>> 0) / 4294967295;
+};
+
+const vn = (x, y) => {
+  const xi = Math.floor(x), yi = Math.floor(y), xf = x - xi, yf = y - yi;
+  const u = xf * xf * (3 - 2 * xf), v = yf * yf * (3 - 2 * yf);
+  const a = hash(xi, yi), b = hash(xi + 1, yi), c = hash(xi, yi + 1), d = hash(xi + 1, yi + 1);
+  return a + (b - a) * u + (c - a) * v + (a - b - c + d) * u * v;
+};
+
+const get = (x, y) => (x < 0 || x >= W || y < 0 || y >= H) ? (y < 0 ? 0 : 3) : tiles[y * W + x];
+const sol = (x, y) => x < 0 || x >= W || y >= H || (y >= 0 && SOLID.has(get(x, y)));
+
+function gen() {
+  tiles = new Uint8Array(W * H);
+  for (let x = 0; x < W; x++) {
+    const s = Math.floor(34 + (vn(x * .02, 0) - .5) * 30 + (vn(x * .08, 5) - .5) * 8);
+    surf[x] = s;
+    const dl = 6 + Math.floor(vn(x * .1, 9) * 3);
+    for (let y = s; y < H; y++) {
+      const d = y - s; let id = d == 0 ? 2 : (d < dl ? 1 : 3);
+      if (d > 6 && vn(x * .07, y * .09) * .65 + vn(x * .2, y * .2 + 50) * .35 > .645) id = 0;
+      else if (id == 3) {
+        if (d > 8 && vn(x * .25, y * .25 + 300) > .73) id = 6;
+        else if (d > 30 && vn(x * .3 + 500, y * .3) > .76) id = 7;
+        else if (d > 60 && vn(x * .3 + 900, y * .3 + 40) > .77) id = 12;
+      }
+      tiles[y * W + x] = id;
     }
   }
-  let last=-9;
-  for(let x=4;x<W-4;x++){
-    if(hash(x,7)>.85&&x-last>4&&get(x,surf[x])==2){
-      last=x;const n=4+Math.floor(hash(x,8)*4),top=surf[x]-n;
-      for(let y=top;y<surf[x];y++)tiles[y*W+x]=4;
-      for(let dy=-2;dy<=1;dy++)for(let dx=-2;dx<=2;dx++){if(Math.abs(dx)+Math.abs(dy)<4){const tx=x+dx,ty=top+dy;if(get(tx,ty)==0)tiles[ty*W+tx]=5}}
-    }
-  }
 }
 
-const P={x:W/2,y:20,w:.7,h:2.5,vx:0,vy:0,on:false,hp:100,face:1,inv:0,hurt:0,pick:0,sword:0,fs:null};
-let inv={9:20},time=.2,sel=0,mobs=[],keys={},aim={d:false,x:0,y:0,id:-1},mine={x:-1,y:-1,p:0},cd=0,pcd=0,swing=0,dirty=true;
+// Игрок и состояние
+const P = { x: W / 2, y: 20, w: 0.7, h: 1.8, vx: 0, vy: 0, on: false, hp: 100, face: 1, hurt: 0, pick: 0, sword: 0 };
+let inv = { 9: 20 }, sel = 0, mobs = [], keys = {}, aim = { d: false, x: 0, y: 0, id: -1 }, mine = { x: -1, y: -1, p: 0 }, cd = 0, pcd = 0, dirty = true;
 
-function spawnP(){
-  P.x=W/2;
-  P.y=(surf[Math.floor(W/2)]||30)-4;
-  P.vx=P.vy=0;
-  P.hp=100;
-  P.fs=null;
-  P.hurt=1.5;
-}
-function save(){try{let s='';for(let i=0;i<tiles.length;i+=8000)s+=String.fromCharCode.apply(null,tiles.subarray(i,i+8000));localStorage.setItem(KEY,JSON.stringify({w:btoa(s),seed,surf,inv,time,x:P.x,y:P.y,hp:P.hp,pick:P.pick,sword:P.sword,won:P.won,gd:P.gd}))}catch(e){}}
-function load(){try{const d=JSON.parse(localStorage.getItem(KEY));if(!d)return false;const s=atob(d.w);tiles=new Uint8Array(W*H);for(let i=0;i<s.length;i++)tiles[i]=s.charCodeAt(i);seed=d.seed;surf=d.surf;inv=d.inv;time=d.time;P.x=d.x;P.y=d.y;P.hp=d.hp;P.pick=d.pick;P.sword=d.sword;P.won=d.won;P.gd=d.gd;return true}catch(e){return false}}
-if(!load()){gen();spawnP()}
-setInterval(save,10000);
-
-const cv=document.getElementById('c'),ctx=cv.getContext('2d');let ts=28,VW,VH,cx=0,cy=0;
-function rs(){
-  const d=Math.min(devicePixelRatio||1,2);
-  cv.width=innerWidth*d;
-  cv.height=innerHeight*d;
-  ts=Math.round(Math.max(cv.width/20,28*d));
-  VW=cv.width/ts;
-  VH=cv.height/ts;
-}
-addEventListener('resize',rs);rs();
-
-const hold={L:0,R:0,J:0};
-for(const k of['L','R','J']){
-  const e=document.getElementById(k);
-  e.onpointerdown=ev=>{hold[k]=1;e.setPointerCapture(ev.pointerId);ev.preventDefault()};
-  e.onpointerup=e.onpointercancel=e.onpointerleave=()=>hold[k]=0;
-}
-addEventListener('keydown',e=>{keys[e.code]=1;if(/Digit[1-9]/.test(e.code)){sel=+e.code.slice(5)-1;dirty=true}});
-addEventListener('keyup',e=>keys[e.code]=0);
-
-const sc=e=>({x:e.clientX/innerWidth*VW+cx,y:e.clientY/innerHeight*VH+cy});
-cv.onpointerdown=e=>{if(aim.id>=0)return;aim.id=e.pointerId;aim.d=true;Object.assign(aim,sc(e));cv.setPointerCapture(e.pointerId)};
-cv.onpointermove=e=>{if(e.pointerId==aim.id)Object.assign(aim,sc(e))};
-cv.onpointerup=cv.onpointercancel=e=>{if(e.pointerId==aim.id){aim.d=false;aim.id=-1;mine.p=0}};
-
-function items(){const a=['sword','pick'];Object.keys(inv).map(Number).sort((a,b)=>a-b).forEach(k=>{if(inv[k]>0)a.push(k)});return a}
-function add(id,n=1){inv[id]=(inv[id]||0)+n;dirty=true}
-function hbRender(){const it=items();if(sel>=it.length)sel=0;const hb=document.getElementById('hb');hb.innerHTML='';
-it.forEach((k,i)=>{const d=document.createElement('div');d.className='s'+(i==sel?' on':'');
-d.innerHTML=k=='sword'?'⚔️<u>'+(P.sword+1)+'</u>':k=='pick'?'⛏<u>'+(P.pick+1)+'</u>':`<i style="background:${T[k]?T[k].c:{20:'#5c5',21:'#c8713a',22:'#cfd3d8',23:'#f5d742',24:'#9b59d6'}[k]}"></i><u>${inv[k]}</u>`;
-d.onpointerdown=e=>{sel=i;dirty=true;e.stopPropagation()};hb.appendChild(d)});dirty=false}
-function say(t){const m=document.getElementById('msg');m.textContent=t;clearTimeout(say.t);say.t=setTimeout(()=>m.textContent='',2000)}
-
-const REC=[{n:'Верстак',c:{8:10},o:[10,1]},{n:'Факелы ×3',c:{8:1,20:1},o:[9,3]},{n:'Печь',c:{3:20,9:3,8:4},o:[11,1],b:10},
-{n:'Медный слиток',c:{6:3},o:[21,1],b:11},{n:'Железный слиток',c:{7:4},o:[22,1],b:11},{n:'Золотой слиток',c:{12:4},o:[23,1],b:11},
-{n:'Железная кирка',c:{22:8,8:4},o:'p1',b:10},{n:'Железный меч',c:{22:6,8:3},o:'s1',b:10},
-{n:'Золотая кирка',c:{23:8,8:4},o:'p2',b:10},{n:'Золотой меч',c:{23:6,8:3},o:'s2',b:10},{n:'Корона слизня',c:{20:15,23:2},o:[24,1],b:10}];
-const GOALS=[['Добудь дерево',()=>inv[8]>0],['Построй верстак',()=>inv[10]>0],['Найди медную руду',()=>inv[6]>0],['Построй печь',()=>inv[11]>0],['Выплавь железо',()=>inv[22]>0],['Железная кирка',()=>P.pick>=1],['Найди золото',()=>inv[12]>0||inv[23]>0],['Золотая кирка',()=>P.pick>=2],['Создай Корону слизня',()=>inv[24]>0||P.won],['Победи Короля слизней',()=>P.won]];
-setInterval(()=>{P.gd=P.gd||{};GOALS.forEach((g,i)=>{if(!P.gd[i]&&g[1]()){P.gd[i]=1;say('✅ '+g[0])}})},1000);
-const near=id=>{for(let y=-3;y<=3;y++)for(let x=-4;x<=4;x++)if(get(Math.floor(P.x+P.w/2)+x,Math.floor(P.y+1)+y)==id)return true;return false};
-function craftUI(){const p=document.getElementById('panel');p.innerHTML='<h3>🏆 Цели</h3>'+GOALS.map((g,i)=>`<div class="g">${P.gd&&P.gd[i]?'✅':'⬜'} ${g[0]}</div>`).join('')+'<h3>🔨 Крафт</h3><small>Инструменты — у верстака, слитки — у печи</small>';
-REC.forEach(r=>{const own=typeof r.o=='string'&&P[r.o[0]=='p'?'pick':'sword']>=+r.o[1];const ok=!own&&Object.entries(r.c).every(([k,v])=>(inv[k]||0)>=v)&&(!r.b||near(r.b));
-const d=document.createElement('div');d.className='r';d.innerHTML=`<span>${r.n}<br><small>${Object.entries(r.c).map(([k,v])=>IN[k]+' ×'+v+' ('+(inv[k]||0)+')').join(', ')}${r.b?' · '+(r.b==10?'верстак':'печь'):''}</small></span>`;
-const b=document.createElement('button');b.textContent=own?'Есть':'Создать';b.disabled=!ok;
-b.onclick=()=>{for(const k in r.c)inv[k]-=r.c[k];if(typeof r.o=='string')P[r.o[0]=='p'?'pick':'sword']=+r.o[1];else add(r.o[0],r.o[1]);dirty=true;craftUI();say('Создано: '+r.n)};d.appendChild(b);p.appendChild(d)})}
-document.getElementById('cr').onclick=()=>{const p=document.getElementById('panel');p.style.display=p.style.display=='block'?'none':'block';if(p.style.display=='block')craftUI()};
-
-function hit(e){for(let y=Math.floor(e.y);y<=Math.floor(e.y+e.h-1e-6);y++)for(let x=Math.floor(e.x);x<=Math.floor(e.x+e.w-1e-6);x++)if(sol(x,y))return true;return false}
-function move(e,dt,step){e.x+=e.vx*dt;if(hit(e)){let done=false;if(step&&e.on){e.y-=1.05;if(!hit(e)){e.vy=0;done=true}else e.y+=1.05}
-if(!done){e.x=e.vx>0?Math.floor(e.x+e.w)-e.w-1e-4:Math.floor(e.x)+1+1e-4;e.vx=0}}
-e.y+=e.vy*dt;e.on=false;if(hit(e)){if(e.vy>0){e.y=Math.floor(e.y+e.h)-e.h-1e-4;e.on=true}else e.y=Math.floor(e.y)+1+1e-4;e.vy=0}}
-const ov=(a,b)=>a.x<b.x+b.w&&a.x+a.w>b.x&&a.y<b.y+b.h&&a.y+a.h>b.y;
-
-function dmgP(n,from){
-  if(P.hurt>0)return;
-  P.hp-=n;P.hurt=1.2;P.vy=-8;P.vx=(P.x<from?-1:1)*6;
-  say('⚠️ Урон! HP: '+Math.max(0,Math.floor(P.hp)));
+function spawnP() {
+  P.x = W / 2;
+  P.y = (surf[Math.floor(W / 2)] || 30) - 3;
+  P.vx = P.vy = 0;
+  P.hp = 100;
+  P.hurt = 1.5;
 }
 
-function update(dt){
-  time=(time+dt/1440)%1;const day=dayL();
-  const l=hold.L||keys.KeyA||keys.ArrowLeft,r=hold.R||keys.KeyD||keys.ArrowRight,j=hold.J||keys.Space||keys.KeyW||keys.ArrowUp;
-  const tv=(r-l)*7;if(tv)P.face=tv>0?1:-1;
-  P.vx+=(tv-P.vx)*Math.min(1,dt*(P.on?18:8));
-  if(j&&P.on){P.vy=-20;P.on=false}
-  P.vy=Math.min(P.vy+55*dt,45);
-  P.hurt=Math.max(0,P.hurt-dt);
-  
-  move(P,dt,true);
-  
-  if(!P.on&&P.vy>0&&P.fs==null)P.fs=P.y;
-  if(P.vy<0&&!P.on)P.fs=null;
-  if(P.on&&P.fs!=null){
-    const d=P.y-P.fs;
-    if(d>32)dmgP(Math.floor((d-32)*8),P.x);
-    P.fs=null;
-  }
-  if(P.hp<100&&P.hurt<=0)P.hp=Math.min(100,P.hp+dt*4);
-  if(P.y>H+4){spawnP();say('Вы упали в пустоту')}
-  if(P.hp<=0){say('Вы погибли!');spawnP();mobs=[]}
+if (!tiles) { gen(); spawnP(); }
 
-  cd-=dt;pcd-=dt;swing-=dt;const it=items()[sel],pcx=P.x+P.w/2,pcy=P.y+P.h/2;
-  if(aim.d){
-    const tx=Math.floor(aim.x),ty=Math.floor(aim.y),dist=Math.hypot(aim.x-pcx,aim.y-pcy);
-    if(it=='pick'&&dist<6.5){
-      const t=get(tx,ty);
-      if(t&&ty<H-1){
-        if(mine.x!=tx||mine.y!=ty){mine.x=tx;mine.y=ty;mine.p=0}
-        mine.p+=dt;const need=T[t].h*(.22-.06*P.pick);
-        if(mine.p>=need){tiles[ty*W+tx]=0;if(T[t].d)add(T[t].d);mine.p=0;dirty=true}
-      }else mine.p=0;
-    }else if(it=='sword'&&cd<=0){
-      cd=.3;swing=.15;
-      mobs.forEach(m=>{if(Math.hypot(m.x+m.w/2-pcx,m.y+m.h/2-pcy)<5){m.hp-=12+10*P.sword;m.vy=-6;m.vx=(m.x<P.x?-1:1)*5}});
-    }else if(it==24&&pcd<=0&&!mobs.some(m=>m.boss)){
-      inv[24]--;dirty=true;pcd=1;mobs.push({boss:1,x:P.x+4,y:Math.max(2,P.y-4),w:3.5,h:2.8,vx:0,vy:0,hp:250,mh:250,t:1,on:false});say('👑 Король слизней призван!');
-    }else if(typeof it=='number'&&it<20&&dist<6.5&&pcd<=0&&get(tx,ty)==0&&ty>=0&&(get(tx+1,ty)||get(tx-1,ty)||get(tx,ty+1)||get(tx,ty-1))){
-      const b={x:tx,y:ty,w:1,h:1};
-      if(!(SOLID.has(it)&&ov(P,b))){tiles[ty*W+tx]=it;inv[it]--;pcd=.12;dirty=true}
-    }
-  }
+// Canvas и адаптивность
+const cv = document.getElementById('c'), ctx = cv.getContext('2d');
+let ts = 16, VW = 0, VH = 0, cx = 0, cy = 0;
 
-  mobs=mobs.filter(m=>{
-    m.t-=dt;
-    if(m.hp<=0){
-      if(m.boss){add(23,8);P.won=1;say('🏆 Король слизней побежден!')}
-      else if(m.z){if(Math.random()<.6)add(8,2)}
-      else{if(Math.random()<.8)add(20,1)}
-      return false;
-    }
-    m.vy=Math.min(m.vy+55*dt,45);
-    if(m.z){m.vx=(P.x>m.x?1:-1)*2.5;if(m.on&&m.wall)m.vy=-12}
-    else if(m.on){m.vx*=.85;if(m.t<=0){m.t=m.boss?1.5:1+Math.random();m.vy=m.boss?-20:-12;m.vx=(P.x>m.x?1:-1)*(m.boss?6:4)}}
-    move(m,dt,false);m.wall=m.vx==0;
-    if(ov(P,m))dmgP(m.boss?20:m.z?12:8,m.x);
-    return m.boss||Math.abs(m.x-P.x)<40;
+function rs() {
+  cv.width = window.innerWidth;
+  cv.height = window.innerHeight;
+  ctx.imageSmoothingEnabled = false;
+  ts = Math.max(16, Math.floor(cv.width / 22));
+  VW = cv.width / ts;
+  VH = cv.height / ts;
+}
+addEventListener('resize', rs); rs();
+
+// Управление
+const hold = { L: 0, R: 0, J: 0 };
+['L', 'R', 'J'].forEach(k => {
+  const e = document.getElementById('btn-' + k.toLowerCase());
+  if (!e) return;
+  e.onpointerdown = ev => { hold[k] = 1; e.setPointerCapture(ev.pointerId); ev.preventDefault(); };
+  e.onpointerup = e.onpointercancel = e.onpointerleave = () => hold[k] = 0;
+});
+
+addEventListener('keydown', e => {
+  keys[e.code] = 1;
+  if (/Digit[1-9]/.test(e.code)) { sel = +e.code.slice(5) - 1; dirty = true; }
+});
+addEventListener('keyup', e => keys[e.code] = 0);
+
+const sc = e => ({ x: e.clientX / ts + cx, y: e.clientY / ts + cy });
+cv.onpointerdown = e => { if (aim.id >= 0) return; aim.id = e.pointerId; aim.d = true; Object.assign(aim, sc(e)); cv.setPointerCapture(e.pointerId); };
+cv.onpointermove = e => { if (e.pointerId == aim.id) Object.assign(aim, sc(e)); };
+cv.onpointerup = cv.onpointercancel = e => { if (e.pointerId == aim.id) { aim.d = false; aim.id = -1; mine.p = 0; } };
+
+function items() {
+  const a = ['sword', 'pick'];
+  Object.keys(inv).map(Number).sort((a,b)=>a-b).forEach(k => { if (inv[k] > 0) a.push(k); });
+  return a;
+}
+
+function add(id, n = 1) { inv[id] = (inv[id] || 0) + n; dirty = true; }
+
+function hbRender() {
+  const it = items(); if (sel >= it.length) sel = 0;
+  const hb = document.getElementById('hotbar'); hb.innerHTML = '';
+  it.forEach((k, i) => {
+    const d = document.createElement('div');
+    d.className = 'slot' + (i == sel ? ' active' : '');
+    const col = typeof k == 'number' ? (T[k] ? T[k].c : '#9b59d6') : (k == 'sword' ? '#e74c3c' : '#3498db');
+    d.innerHTML = `<i class="slot-icon" style="background:${col}"></i><span class="slot-count">${typeof k == 'number' ? inv[k] : (k=='sword'?P.sword+1:P.pick+1)}</span>`;
+    d.onpointerdown = e => { sel = i; dirty = true; e.stopPropagation(); };
+    hb.appendChild(d);
   });
+  dirty = false;
+}
 
-  sp-=dt;
-  if(sp<=0){
-    sp=4;
-    if(mobs.length<3){
-      const x=Math.floor(P.x+(Math.random()<.5?-1:1)*(12+Math.random()*8)),y=(surf[Math.max(0,Math.min(W-1,x))]||30)-2;
-      if(x>2&&x<W-2&&get(x,y)==0)mobs.push(Math.random()<.4?{x,y,w:.8,h:2,vx:0,vy:0,hp:30,z:1,t:1,on:false}:{x,y,w:1.1,h:.8,vx:0,vy:0,hp:12,t:1,on:false});
-    }
+function say(t) {
+  const m = document.getElementById('msg-box'); m.textContent = t;
+  clearTimeout(say.t); say.t = setTimeout(() => m.textContent = '', 2000);
+}
+
+// Крафт
+const REC = [
+  { n: 'Верстак', c: { 8: 10 }, o: [10, 1] },
+  { n: 'Факелы x3', c: { 8: 1, 20: 1 }, o: [9, 3] },
+  { n: 'Печь', c: { 3: 20, 9: 3, 8: 4 }, o: [11, 1] },
+  { n: 'Железная кирка', c: { 7: 8, 8: 4 }, o: 'p1' },
+  { n: 'Железный меч', c: { 7: 6, 8: 3 }, o: 's1' }
+];
+
+function craftUI() {
+  const p = document.getElementById('craft-panel');
+  p.innerHTML = '<h3>🔨 КРАФТ</h3>';
+  REC.forEach(r => {
+    const ok = Object.entries(r.c).every(([k, v]) => (inv[k] || 0) >= v);
+    const d = document.createElement('div'); d.className = 'craft-row';
+    d.innerHTML = `<span>${r.n}</span>`;
+    const b = document.createElement('button'); b.textContent = 'Создать'; b.disabled = !ok;
+    b.onclick = () => {
+      for (const k in r.c) inv[k] -= r.c[k];
+      if (typeof r.o == 'string') P[r.o[0] == 'p' ? 'pick' : 'sword'] = +r.o[1];
+      else add(r.o[0], r.o[1]);
+      dirty = true; craftUI(); say('Создано: ' + r.n);
+    };
+    d.appendChild(b); p.appendChild(d);
+  });
+}
+document.getElementById('btn-craft').onclick = () => {
+  const p = document.getElementById('craft-panel');
+  p.style.display = p.style.display == 'block' ? 'none' : 'block';
+  if (p.style.display == 'block') craftUI();
+};
+
+// Хитбоксы
+function hit(e) {
+  for (let y = Math.floor(e.y); y <= Math.floor(e.y + e.h - 1e-4); y++)
+    for (let x = Math.floor(e.x); x <= Math.floor(e.x + e.w - 1e-4); x++)
+      if (sol(x, y)) return true;
+  return false;
+}
+
+function move(e, dt) {
+  e.x += e.vx * dt;
+  if (hit(e)) {
+    e.x = e.vx > 0 ? Math.floor(e.x + e.w) - e.w - 1e-4 : Math.floor(e.x) + 1 + 1e-4;
+    e.vx = 0;
+  }
+  e.y += e.vy * dt; e.on = false;
+  if (hit(e)) {
+    if (e.vy > 0) { e.y = Math.floor(e.y + e.h) - e.h - 1e-4; e.on = true; }
+    else { e.y = Math.floor(e.y) + 1 + 1e-4; }
+    e.vy = 0;
   }
 }
-let sp=0;
-function dayL(){return Math.max(0,Math.min(1,(Math.sin(6.2832*time)+.38)*2.2))}
 
-function draw(){
-  const day=dayL();
-  const sky=`rgb(${10+day*99|0},${14+day*171|0},${36+day*219|0})`;
-  ctx.fillStyle=sky;ctx.fillRect(0,0,cv.width,cv.height);
+function dmgP(n) {
+  if (P.hurt > 0) return;
+  P.hp -= n; P.hurt = 1.0; P.vy = -6;
+  say('⚠️ Урон! HP: ' + Math.max(0, Math.floor(P.hp)));
+}
 
-  cx=Math.max(0,Math.min(W-VW,P.x+P.w/2-VW/2));
-  cy=Math.max(0,Math.min(H-VH,P.y+P.h/2-VH/2));
+// Главный физический цикл
+function update(dt) {
+  const l = hold.L || keys.KeyA || keys.ArrowLeft, r = hold.R || keys.KeyD || keys.ArrowRight, j = hold.J || keys.Space || keys.KeyW || keys.ArrowUp;
+  const tv = (r - l) * 8; if (tv) P.face = tv > 0 ? 1 : -1;
+  P.vx += (tv - P.vx) * Math.min(1, dt * 15);
+  if (j && P.on) { P.vy = -18; P.on = false; }
+  P.vy = Math.min(P.vy + 50 * dt, 40);
+  P.hurt = Math.max(0, P.hurt - dt);
 
-  const x0=Math.floor(cx),y0=Math.floor(cy),x1=Math.ceil(cx+VW),y1=Math.ceil(cy+VH);
-  
-  for(let y=y0;y<=y1;y++){
-    for(let x=x0;x<=x1;x++){
-      const t=get(x,y),sx=(x-cx)*ts,sy=(y-cy)*ts,z=Math.ceil(ts);
-      if(t>0){
-        const k=T[t]||{c:'#555'};
-        ctx.fillStyle=k.c;ctx.fillRect(sx,sy,z,z);
-        if(t==2){ctx.fillStyle='#3fa13f';ctx.fillRect(sx,sy,z,z*.3)}
-        if(t==6||t==7||t==12){ctx.fillStyle=t==6?'#f0a060':t==12?'#fff3a0':'#ddd';ctx.fillRect(sx+z*.3,sy+z*.3,z*.4,z*.4)}
+  move(P, dt);
+
+  if (P.y > H + 2 || P.hp <= 0) { say('Вы погибли!'); spawnP(); mobs = []; }
+
+  // Действия прицела
+  cd -= dt;
+  if (aim.d) {
+    const tx = Math.floor(aim.x), ty = Math.floor(aim.y);
+    const dist = Math.hypot(aim.x - (P.x + P.w / 2), aim.y - (P.y + P.h / 2));
+    const it = items()[sel];
+
+    if (it == 'pick' && dist < 6) {
+      const t = get(tx, ty);
+      if (t > 0) {
+        if (mine.x != tx || mine.y != ty) { mine.x = tx; mine.y = ty; mine.p = 0; }
+        mine.p += dt;
+        if (mine.p >= T[t].h * (0.2 - 0.05 * P.pick)) {
+          tiles[ty * W + tx] = 0; if (T[t].d) add(T[t].d);
+          mine.p = 0; dirty = true;
+        }
+      }
+    } else if (typeof it == 'number' && dist < 6 && cd <= 0 && get(tx, ty) == 0) {
+      if (get(tx+1,ty) || get(tx-1,ty) || get(tx,ty+1) || get(tx,ty-1)) {
+        tiles[ty * W + tx] = it; inv[it]--; cd = 0.15; dirty = true;
       }
     }
   }
 
-  // Прицел копания / постройки
-  if(aim.d){
-    const tx=Math.floor(aim.x),ty=Math.floor(aim.y);
-    ctx.strokeStyle='#ff5';ctx.lineWidth=2;ctx.strokeRect((tx-cx)*ts,(ty-cy)*ts,ts,ts);
-    if(mine.p>0&&get(tx,ty)){
-      ctx.fillStyle='rgba(0,0,0,.4)';ctx.fillRect((tx-cx)*ts,(ty-cy)*ts,ts,ts);
+  // Мобы
+  mobs = mobs.filter(m => {
+    m.vy = Math.min(m.vy + 50 * dt, 40);
+    m.vx = (P.x > m.x ? 1 : -1) * 2;
+    move(m, dt);
+    if (Math.abs(P.x - m.x) < 0.8 && Math.abs(P.y - m.y) < 1.2) dmgP(10);
+    return Math.abs(m.x - P.x) < 35;
+  });
+}
+
+// Отрисовка кадра
+function draw() {
+  ctx.fillStyle = '#1a252f'; ctx.fillRect(0, 0, cv.width, cv.height);
+
+  cx = Math.max(0, Math.min(W - VW, P.x + P.w / 2 - VW / 2));
+  cy = Math.max(0, Math.min(H - VH, P.y + P.h / 2 - VH / 2));
+
+  const x0 = Math.floor(cx), y0 = Math.floor(cy), x1 = Math.ceil(cx + VW), y1 = Math.ceil(cy + VH);
+
+  // Отрисовка блоков
+  for (let y = y0; y <= y1; y++) {
+    for (let x = x0; x <= x1; x++) {
+      const t = get(x, y);
+      if (t > 0) {
+        const sx = Math.floor((x - cx) * ts), sy = Math.floor((y - cy) * ts);
+        ctx.fillStyle = T[t] ? T[t].c : '#555';
+        ctx.fillRect(sx, sy, ts, ts);
+        if (t == 2) { ctx.fillStyle = '#2ecc71'; ctx.fillRect(sx, sy, ts, 4); }
+      }
     }
   }
 
-  // Мобы
-  for(const m of mobs){
-    const sx=(m.x-cx)*ts,sy=(m.y-cy)*ts,w=m.w*ts,h=m.h*ts;
-    ctx.fillStyle=m.boss?'#9b59d6':m.z?'#2ecc71':'#3498db';
-    ctx.beginPath();ctx.ellipse(sx+w/2,sy+h*.6,w/2,h*.55,0,0,7);ctx.fill();
-    if(m.boss){ctx.fillStyle='#333';ctx.fillRect(sx,sy-10,w,6);ctx.fillStyle='#e74c3c';ctx.fillRect(sx,sy-10,w*(m.hp/m.mh),6)}
+  // Отрисовка прицела
+  if (aim.d) {
+    const tx = Math.floor(aim.x), ty = Math.floor(aim.y);
+    ctx.strokeStyle = '#f1c40f'; ctx.lineWidth = 2;
+    ctx.strokeRect(Math.floor((tx - cx) * ts), Math.floor((ty - cy) * ts), ts, ts);
   }
 
-  // Игрок
-  const sx=(P.x-cx)*ts,sy=(P.y-cy)*ts,u=ts;
-  if(P.hurt>0&&Math.floor(Date.now()/100)%2)ctx.globalAlpha=.4;
-  ctx.fillStyle='#e8b98a';ctx.fillRect(sx+u*.1,sy,u*.6,u*.7);
-  ctx.fillStyle='#3a6fd0';ctx.fillRect(sx,sy+u*.7,u*.8,u*1.1);
-  if(swing>0){ctx.strokeStyle='#fff';ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(sx+u*.4,sy+u);ctx.lineTo((aim.x-cx)*ts,(aim.y-cy)*ts);ctx.stroke()}
-  ctx.globalAlpha=1;
+  // Отрисовка мобов
+  mobs.forEach(m => {
+    ctx.fillStyle = '#e74c3c';
+    ctx.fillRect(Math.floor((m.x - cx) * ts), Math.floor((m.y - cy) * ts), Math.floor(m.w * ts), Math.floor(m.h * ts));
+  });
 
-  document.getElementById('on').textContent='одиночный режим';
-  document.getElementById('hpf').style.width=Math.max(0,P.hp)+'%';
+  // Отрисовка игрока
+  const px = Math.floor((P.x - cx) * ts), py = Math.floor((P.y - cy) * ts);
+  if (P.hurt > 0 && Math.floor(Date.now() / 100) % 2) ctx.globalAlpha = 0.4;
+  ctx.fillStyle = '#f39c12'; ctx.fillRect(px, py, Math.floor(P.w * ts), Math.floor(P.h * ts));
+  ctx.fillStyle = '#000'; ctx.fillRect(px + (P.face > 0 ? 6 : 2), py + 4, 3, 3);
+  ctx.globalAlpha = 1.0;
+
+  // Обновление интерфейса
+  document.getElementById('hp-fill').style.width = Math.max(0, P.hp) + '%';
+  document.getElementById('hp-text').textContent = `${Math.max(0, Math.floor(P.hp))} / 100`;
 }
 
-let last=performance.now();
-function loop(n){
-  const dt=Math.min(.033,(n-last)/1000);last=n;
-  update(dt);draw();if(dirty)hbRender();
+let last = performance.now();
+function loop(n) {
+  const dt = Math.min(0.033, (n - last) / 1000); last = n;
+  update(dt); draw();
+  if (dirty) hbRender();
   requestAnimationFrame(loop);
 }
-hbRender();requestAnimationFrame(loop);
-</script></body></html>
+
+hbRender(); requestAnimationFrame(loop);
+</script>
+</body>
+</html>
