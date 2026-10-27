@@ -1,6 +1,6 @@
 <!DOCTYPE html><html lang="ru"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-<title>Pocket Terraria</title>
+<title>Pocket Terraria</title><link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@500;700&display=swap" rel="stylesheet">
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
 html,body{margin:0;height:100%;background:#000;overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none;font-family:system-ui,sans-serif;color:#fff}
@@ -19,9 +19,21 @@ canvas{display:block;width:100%;height:100%}
 .r button{background:#3a7;border:0;color:#fff;border-radius:6px;padding:8px 12px;font-size:14px}
 .r button:disabled{background:#555;opacity:.6}
 #msg{position:fixed;bottom:110px;left:0;right:0;text-align:center;font-size:14px;pointer-events:none;text-shadow:0 0 4px #000}
+body{font-family:'Pixelify Sans',system-ui,sans-serif}
+.b{background:linear-gradient(#ffffff40,#ffffff18);border:3px solid #fff7;box-shadow:0 4px 0 #0006;backdrop-filter:blur(4px)}
+.b:active{transform:translateY(3px);box-shadow:none}
+#hp{height:18px;border:3px solid #2a1a0e;border-radius:3px;background:#3a0d0d;top:10px;box-shadow:0 2px 0 #0008}
+#hpf{background:linear-gradient(#ff6b6b,#c62828)}
+#on{position:fixed;top:34px;left:10px;font-size:13px;text-shadow:0 1px 3px #000}
+#hb{top:54px}
+.s{background:linear-gradient(#3b2a1a,#241608);border:3px solid #6b4a2b;border-radius:4px;box-shadow:0 2px 0 #0008}
+.s.on{border-color:#ffd54a;box-shadow:0 0 10px #ffd54a99;transform:translateY(-2px)}
+#panel{background:linear-gradient(#2b1d12f2,#1a110af2);border:4px solid #8a5a2b;border-radius:8px;box-shadow:0 8px 30px #000a}
+#panel h3{margin:8px 0 4px;color:#ffd54a}.g{font-size:15px;padding:2px 0}
+.r button{background:linear-gradient(#5bc46a,#2e8b3d);border:2px solid #0006;font-family:inherit}
 </style></head><body>
 <canvas id="c"></canvas>
-<div id="hp"><div id="hpf"></div></div><div id="hb"></div>
+<div id="hp"><div id="hpf"></div></div><div id="on"></div><div id="hb"></div>
 <div class="b" id="cr" style="position:fixed">🔨</div>
 <div id="panel"></div><div id="msg"></div>
 <div class="b" id="L" style="left:10px;bottom:24px">◀</div>
@@ -33,9 +45,9 @@ const W=300,H=130,KEY='pocket_terraria_v1';
 // id:{c color, h hardness, d drop item, n name}
 const T={1:{c:'#7a5233',h:1,d:1,n:'Земля'},2:{c:'#7a5233',h:1,d:1,n:'Трава'},3:{c:'#7d7d88',h:3,d:3,n:'Камень'},
 4:{c:'#6a4526',h:1.5,d:8,n:'Ствол'},5:{c:'#2f8a34',h:.3,d:0,n:'Листва'},6:{c:'#c8713a',h:4,d:6,n:'Медная руда'},
-7:{c:'#b9aba0',h:5,d:7,n:'Железная руда'},8:{c:'#a9793f',h:2,d:8,n:'Дерево'},9:{c:'#ffcc55',h:.1,d:9,n:'Факел'},10:{c:'#8a5a2b',h:1,d:10,n:'Верстак'}};
-const IN={1:'Земля',3:'Камень',6:'Медная руда',7:'Железная руда',8:'Дерево',9:'Факел',10:'Верстак',20:'Гель'};
-const SOLID=new Set([1,2,3,6,7,8]);
+7:{c:'#b9aba0',h:5,d:7,n:'Железная руда'},8:{c:'#a9793f',h:2,d:8,n:'Дерево'},9:{c:'#ffcc55',h:.1,d:9,n:'Факел'},10:{c:'#8a5a2b',h:1,d:10,n:'Верстак'},11:{c:'#6b6b73',h:2,d:11,n:'Печь'},12:{c:'#e8c030',h:6,d:12,n:'Золотая руда'}};
+const IN={1:'Земля',3:'Камень',6:'Медная руда',7:'Железная руда',8:'Дерево',9:'Факел',10:'Верстак',11:'Печь',12:'Золотая руда',20:'Гель',21:'Медный слиток',22:'Железный слиток',23:'Золотой слиток',24:'Корона слизня'};
+const SOLID=new Set([1,2,3,6,7,8,12]);
 let seed=Math.floor(Math.random()*1e9),tiles,surf=[];
 const hash=(x,y)=>{let h=(Math.imul(x,374761393)+Math.imul(y,668265263)+Math.imul(seed,1013904223))|0;h=Math.imul(h^(h>>>13),1274126177);return((h^(h>>>16))>>>0)/4294967295};
 const vn=(x,y)=>{const xi=Math.floor(x),yi=Math.floor(y),xf=x-xi,yf=y-yi,u=xf*xf*(3-2*xf),v=yf*yf*(3-2*yf),a=hash(xi,yi),b=hash(xi+1,yi),c=hash(xi,yi+1),d=hash(xi+1,yi+1);return a+(b-a)*u+(c-a)*v+(a-b-c+d)*u*v};
@@ -45,7 +57,7 @@ function gen(){tiles=new Uint8Array(W*H);
 for(let x=0;x<W;x++){const s=Math.floor(34+(vn(x*.02,0)-.5)*30+(vn(x*.08,5)-.5)*8);surf[x]=s;const dl=6+Math.floor(vn(x*.1,9)*3);
 for(let y=s;y<H;y++){const d=y-s;let id=d==0?2:d<dl?1:3;
 if(d>6&&vn(x*.07,y*.09)*.65+vn(x*.2,y*.2+50)*.35>.645)id=0;
-else if(id==3){if(d>8&&vn(x*.25,y*.25+300)>.73)id=6;else if(d>30&&vn(x*.3+500,y*.3)>.76)id=7}
+else if(id==3){if(d>8&&vn(x*.25,y*.25+300)>.73)id=6;else if(d>30&&vn(x*.3+500,y*.3)>.76)id=7;else if(d>60&&vn(x*.3+900,y*.3+40)>.77)id=12}
 tiles[y*W+x]=id}}
 let last=-9;for(let x=4;x<W-4;x++){if(hash(x,7)>.85&&x-last>4&&get(x,surf[x])==2){last=x;const n=4+Math.floor(hash(x,8)*4),top=surf[x]-n;
 for(let y=top;y<surf[x];y++)tiles[y*W+x]=4;
@@ -55,9 +67,9 @@ const P={x:W/2,y:20,w:.7,h:2.5,vx:0,vy:0,on:false,hp:100,face:1,inv:0,hurt:0,pic
 let inv={9:20},time=.2,sel=0,mobs=[],keys={},aim={d:false,x:0,y:0,id:-1},mine={x:-1,y:-1,p:0},cd=0,pcd=0,swing=0,dirty=true;
 function spawnP(){P.x=W/2;P.y=surf[Math.floor(W/2)]-3;P.vx=P.vy=0;P.hp=100;P.fs=null}
 function save(){try{let s='';for(let i=0;i<tiles.length;i+=8000)s+=String.fromCharCode.apply(null,tiles.subarray(i,i+8000));
-localStorage.setItem(KEY,JSON.stringify({w:btoa(s),seed,surf,inv,time,x:P.x,y:P.y,hp:P.hp,pick:P.pick,sword:P.sword}))}catch(e){}}
+localStorage.setItem(KEY,JSON.stringify({w:btoa(s),seed,surf,inv,time,x:P.x,y:P.y,hp:P.hp,pick:P.pick,sword:P.sword,won:P.won,gd:P.gd}))}catch(e){}}
 function load(){try{const d=JSON.parse(localStorage.getItem(KEY));if(!d)return false;const s=atob(d.w);tiles=new Uint8Array(W*H);for(let i=0;i<s.length;i++)tiles[i]=s.charCodeAt(i);
-seed=d.seed;surf=d.surf;inv=d.inv;time=d.time;P.x=d.x;P.y=d.y;P.hp=d.hp;P.pick=d.pick;P.sword=d.sword;return true}catch(e){return false}}
+seed=d.seed;surf=d.surf;inv=d.inv;time=d.time;P.x=d.x;P.y=d.y;P.hp=d.hp;P.pick=d.pick;P.sword=d.sword;P.won=d.won;P.gd=d.gd;return true}catch(e){return false}}
 if(!load()){gen();spawnP()}
 setInterval(save,10000);document.addEventListener('visibilitychange',save);
 // canvas
@@ -77,17 +89,22 @@ function items(){const a=['sword','pick'];Object.keys(inv).map(Number).sort((a,b
 function add(id,n=1){inv[id]=(inv[id]||0)+n;dirty=true}
 function hbRender(){const it=items();if(sel>=it.length)sel=0;const hb=document.getElementById('hb');hb.innerHTML='';
 it.forEach((k,i)=>{const d=document.createElement('div');d.className='s'+(i==sel?' on':'');
-d.innerHTML=k=='sword'?'⚔️':k=='pick'?'⛏':`<i style="background:${k==20?'#5c5':T[k].c}"></i><u>${inv[k]}</u>`;
+d.innerHTML=k=='sword'?'⚔️<u>'+(P.sword+1)+'</u>':k=='pick'?'⛏<u>'+(P.pick+1)+'</u>':`<i style="background:${T[k]?T[k].c:{20:'#5c5',21:'#c8713a',22:'#cfd3d8',23:'#f5d742',24:'#9b59d6'}[k]}"></i><u>${inv[k]}</u>`;
 d.onpointerdown=e=>{sel=i;dirty=true;e.stopPropagation()};hb.appendChild(d)});dirty=false}
 function say(t){const m=document.getElementById('msg');m.textContent=t;clearTimeout(say.t);say.t=setTimeout(()=>m.textContent='',1800)}
 // crafting
-const REC=[{n:'Верстак',c:{8:10},o:[10,1]},{n:'Факелы ×3',c:{8:1,20:1},o:[9,3]},{n:'Железная кирка',c:{7:12,8:4},o:'pick',b:1},{n:'Железный меч',c:{7:8,8:3},o:'sword',b:1}];
-const nearBench=()=>{for(let y=-3;y<=3;y++)for(let x=-4;x<=4;x++)if(get(Math.floor(P.x+P.w/2)+x,Math.floor(P.y+1)+y)==10)return true;return false};
-function craftUI(){const p=document.getElementById('panel');p.innerHTML='<b>Крафт</b> (🔨 верстак рядом нужен для инструментов)';
-REC.forEach(r=>{const ok=Object.entries(r.c).every(([k,v])=>(inv[k]||0)>=v)&&(!r.b||nearBench())&&!(r.o=='pick'&&P.pick)&&!(r.o=='sword'&&P.sword);
-const d=document.createElement('div');d.className='r';d.innerHTML=`<span>${r.n}<br><small>${Object.entries(r.c).map(([k,v])=>IN[k]+' ×'+v).join(', ')}${r.b?' · верстак':''}</small></span>`;
-const b=document.createElement('button');b.textContent='Создать';b.disabled=!ok;b.onclick=()=>{for(const k in r.c)inv[k]-=r.c[k];
-if(r.o=='pick')P.pick=1;else if(r.o=='sword')P.sword=1;else add(r.o[0],r.o[1]);dirty=true;craftUI();say('Создано: '+r.n)};d.appendChild(b);p.appendChild(d)})}
+const REC=[{n:'Верстак',c:{8:10},o:[10,1]},{n:'Факелы ×3',c:{8:1,20:1},o:[9,3]},{n:'Печь',c:{3:20,9:3,8:4},o:[11,1],b:10},
+{n:'Медный слиток',c:{6:3},o:[21,1],b:11},{n:'Железный слиток',c:{7:4},o:[22,1],b:11},{n:'Золотой слиток',c:{12:4},o:[23,1],b:11},
+{n:'Железная кирка',c:{22:8,8:4},o:'p1',b:10},{n:'Железный меч',c:{22:6,8:3},o:'s1',b:10},
+{n:'Золотая кирка',c:{23:8,8:4},o:'p2',b:10},{n:'Золотой меч',c:{23:6,8:3},o:'s2',b:10},{n:'Корона слизня',c:{20:15,23:2},o:[24,1],b:10}];
+const GOALS=[['Добудь дерево',()=>inv[8]>0],['Построй верстак',()=>inv[10]>0],['Найди медную руду',()=>inv[6]>0],['Построй печь',()=>inv[11]>0],['Выплавь железо',()=>inv[22]>0],['Железная кирка',()=>P.pick>=1],['Найди золото',()=>inv[12]>0||inv[23]>0],['Золотая кирка',()=>P.pick>=2],['Создай Корону слизня',()=>inv[24]>0||P.won],['Победи Короля слизней',()=>P.won]];
+setInterval(()=>{P.gd=P.gd||{};GOALS.forEach((g,i)=>{if(!P.gd[i]&&g[1]()){P.gd[i]=1;say('✅ '+g[0])}})},1000);
+const near=id=>{for(let y=-3;y<=3;y++)for(let x=-4;x<=4;x++)if(get(Math.floor(P.x+P.w/2)+x,Math.floor(P.y+1)+y)==id)return true;return false};
+function craftUI(){const p=document.getElementById('panel');p.innerHTML='<h3>🏆 Цели</h3>'+GOALS.map((g,i)=>`<div class="g">${P.gd&&P.gd[i]?'✅':'⬜'} ${g[0]}</div>`).join('')+'<h3>🔨 Крафт</h3><small>Инструменты — у верстака, слитки — у печи</small>';
+REC.forEach(r=>{const own=typeof r.o=='string'&&P[r.o[0]=='p'?'pick':'sword']>=+r.o[1];const ok=!own&&Object.entries(r.c).every(([k,v])=>(inv[k]||0)>=v)&&(!r.b||near(r.b));
+const d=document.createElement('div');d.className='r';d.innerHTML=`<span>${r.n}<br><small>${Object.entries(r.c).map(([k,v])=>IN[k]+' ×'+v+' ('+(inv[k]||0)+')').join(', ')}${r.b?' · '+(r.b==10?'верстак':'печь'):''}</small></span>`;
+const b=document.createElement('button');b.textContent=own?'Есть':'Создать';b.disabled=!ok;
+b.onclick=()=>{for(const k in r.c)inv[k]-=r.c[k];if(typeof r.o=='string')P[r.o[0]=='p'?'pick':'sword']=+r.o[1];else add(r.o[0],r.o[1]);dirty=true;craftUI();say('Создано: '+r.n)};d.appendChild(b);p.appendChild(d)})}
 document.getElementById('cr').onclick=()=>{const p=document.getElementById('panel');p.style.display=p.style.display=='block'?'none':'block';if(p.style.display=='block')craftUI()};
 // physics
 function hit(e){for(let y=Math.floor(e.y);y<=Math.floor(e.y+e.h-1e-6);y++)for(let x=Math.floor(e.x);x<=Math.floor(e.x+e.w-1e-6);x++)if(sol(x,y))return true;return false}
@@ -111,25 +128,26 @@ if(P.hp<=0){say('Вы погибли');spawnP();mobs=[]}
 cd-=dt;pcd-=dt;swing-=dt;const it=items()[sel],pcx=P.x+P.w/2,pcy=P.y+P.h/2;
 if(aim.d){const tx=Math.floor(aim.x),ty=Math.floor(aim.y),dist=Math.hypot(aim.x-pcx,aim.y-pcy);
 if(it=='pick'&&dist<6){const t=get(tx,ty);if(t&&ty<H-1){if(mine.x!=tx||mine.y!=ty){mine.x=tx;mine.y=ty;mine.p=0}
-mine.p+=dt;const need=T[t].h*(.22-.08*P.pick);if(mine.p>=need){tiles[ty*W+tx]=0;if(T[t].d)add(T[t].d);mine.p=0}}else mine.p=0}
-else if(it=='sword'&&cd<=0){cd=.35;swing=.15;mobs.forEach(m=>{if(aim.x>m.x-.8&&aim.x<m.x+m.w+.8&&aim.y>m.y-.8&&aim.y<m.y+m.h+.8&&Math.hypot(m.x-pcx,m.y-pcy)<5){m.hp-=P.sword?18:10;m.vy=-8;m.vx=(m.x<P.x?-1:1)*-0+(m.x>P.x?6:-6)}})}
-else if(typeof it=='number'&&it!=20&&dist<6&&pcd<=0&&get(tx,ty)==0&&ty>=0&&(get(tx+1,ty)||get(tx-1,ty)||get(tx,ty+1)||get(tx,ty-1))){
-const b={x:tx,y:ty,w:1,h:1};if(!(SOLID.has(it)&&(ov(P,b)||mobs.some(m=>ov(m,b))))){tiles[ty*W+tx]=it;inv[it]--;pcd=.12;dirty=true}}}
+mine.p+=dt;const need=T[t].h*(.22-.08*P.pick);if(mine.p>=need){setT(tx,ty,0);if(T[t].d)add(T[t].d);mine.p=0}}else mine.p=0}
+else if(it=='sword'&&cd<=0){cd=.35;swing=.15;mobs.forEach(m=>{if(aim.x>m.x-.8&&aim.x<m.x+m.w+.8&&aim.y>m.y-.8&&aim.y<m.y+m.h+.8&&Math.hypot(m.x-pcx,m.y-pcy)<5){m.hp-=10+8*P.sword;m.vy=-8;m.vx=(m.x<P.x?-1:1)*-0+(m.x>P.x?6:-6)}})}
+else if(it==24&&pcd<=0&&!mobs.some(m=>m.boss)){inv[24]--;dirty=true;pcd=1;mobs.push({boss:1,x:P.x+6,y:Math.max(2,P.y-6),w:4,h:3,vx:0,vy:0,hp:300,mh:300,t:1,on:false});say('👑 Король слизней пробудился!')}
+else if(typeof it=='number'&&it<20&&dist<6&&pcd<=0&&get(tx,ty)==0&&ty>=0&&(get(tx+1,ty)||get(tx-1,ty)||get(tx,ty+1)||get(tx,ty-1))){
+const b={x:tx,y:ty,w:1,h:1};if(!(SOLID.has(it)&&(ov(P,b)||mobs.some(m=>ov(m,b))))){setT(tx,ty,it);inv[it]--;pcd=.12;dirty=true}}}
 // mobs
-mobs=mobs.filter(m=>{m.t-=dt;if(m.hp<=0){if(Math.random()<.8)add(20,1+(Math.random()<.5));return false}
-m.vy=Math.min(m.vy+60*dt,50);if(m.on){m.vx*=.85;if(m.t<=0){m.t=1+Math.random();m.vy=-14;m.vx=(P.x>m.x?1:-1)*5}}
-move(m,dt,false);if(P.hurt<=0&&ov(P,m))dmgP(10,m.x);
-return Math.abs(m.x-P.x)<45&&!(day>.9&&m.y<surf[Math.floor(m.x)||0]+6&&Math.random()<dt*.3)});
+mobs=mobs.filter(m=>{m.t-=dt;if(m.hp<=0){if(m.boss){add(23,8);P.won=1;say('🏆 Король слизней повержен! Победа!')}else if(m.z){if(Math.random()<.5)add(8,2)}else if(Math.random()<.8)add(20,1+(Math.random()<.5));return false}
+m.vy=Math.min(m.vy+60*dt,50);if(m.z){m.vx=(P.x>m.x?1:-1)*2.8;if(m.on&&m.wall)m.vy=-15}else if(m.on){m.vx*=.85;if(m.t<=0){m.t=m.boss?1.6:1+Math.random();m.vy=m.boss?-24:-14;m.vx=(P.x>m.x?1:-1)*(m.boss?7:5)}}
+move(m,dt,false);m.wall=m.vx==0;if(P.hurt<=0&&ov(P,m))dmgP(m.boss?25:m.z?14:10,m.x);
+return m.boss||Math.abs(m.x-P.x)<45&&!(day>.9&&m.y<surf[Math.floor(m.x)||0]+6&&Math.random()<dt*.3)});
 sp=(sp||0)-dt;if(sp<=0){sp=2;const under=P.y>surf[Math.floor(P.x)]+20;if(mobs.length<5&&(day<.5||under)){
 for(let i=0;i<20;i++){const x=Math.floor(P.x+(Math.random()<.5?-1:1)*(12+Math.random()*8)),y=under?Math.floor(P.y-6+Math.random()*12):surf[Math.max(0,Math.min(W-1,x))]-2;
-if(get(x,y)==0&&get(x,y-1)==0&&SOLID.has(get(x,y+1))||(!under&&x>0&&x<W)){mobs.push({x,y,w:1.2,h:.9,vx:0,vy:0,hp:14,t:1,on:false});break}}}}
+if(get(x,y)==0&&get(x,y-1)==0&&SOLID.has(get(x,y+1))||(!under&&x>0&&x<W)){mobs.push(Math.random()<.45?{x,y:y-1.3,w:.8,h:2.2,vx:0,vy:0,hp:40,z:1,t:1,on:false}:{x,y,w:1.2,h:.9,vx:0,vy:0,hp:14,t:1,on:false});break}}}}
 }
 let sp=0;
 function dayL(){return Math.max(0,Math.min(1,(Math.sin(6.2832*time)+.38)*2.2))}
 // render
 function px(x){return(x-cx)*ts}
 function draw(){const day=dayL(),d=day;const sky=`rgb(${10+d*99|0},${14+d*171|0},${36+d*219|0})`;
-ctx.fillStyle=sky;ctx.fillRect(0,0,cv.width,cv.height);
+const gr=ctx.createLinearGradient(0,0,0,cv.height);gr.addColorStop(0,sky);gr.addColorStop(1,`rgb(${40+d*150|0},${50+d*160|0},${90+d*140|0})`);ctx.fillStyle=gr;ctx.fillRect(0,0,cv.width,cv.height);if(day<.5)for(let i=0;i<50;i++){ctx.fillStyle=`rgba(255,255,255,${1-day*2})`;ctx.fillRect(hash(i,1)*cv.width,hash(i,2)*cv.height*.6,2,2)}
 cx=Math.max(0,Math.min(W-VW,P.x+P.w/2-VW/2));cy=Math.max(0,Math.min(H-VH,P.y+P.h/2-VH/2));
 // sun/moon
 const a=time*6.2832;ctx.fillStyle=d>.2?'#ffe066':'#dde';ctx.beginPath();ctx.arc(cv.width*(.1+.8*((time/.625)%1)),cv.height*(.25-.15*Math.sin((time/.625%1)*3.14)),ts*1.1,0,7);ctx.fill();
@@ -144,10 +162,10 @@ else{if(t==0||t>=4&&t!=8&&t!=6&&t!=7){ctx.fillStyle='#3b291c';ctx.fillRect(sx,sy
 if(t){const k=T[t];ctx.fillStyle=k.c;
 if(t==4)ctx.fillRect(sx+z*.3,sy,z*.4,z);else if(t==5){ctx.fillRect(sx,sy,z,z);ctx.fillStyle='rgba(0,0,0,.18)';ctx.fillRect(sx+z*.5,sy,z*.5,z*.5)}
 else if(t==9){ctx.fillStyle='#6a4526';ctx.fillRect(sx+z*.42,sy+z*.4,z*.16,z*.6);ctx.fillStyle='#ffb020';ctx.beginPath();ctx.arc(sx+z/2,sy+z*.32,z*.2,0,7);ctx.fill()}
-else if(t==10){ctx.fillRect(sx,sy+z*.3,z,z*.2);ctx.fillRect(sx+z*.1,sy+z*.5,z*.15,z*.5);ctx.fillRect(sx+z*.75,sy+z*.5,z*.15,z*.5)}
+else if(t==11){ctx.fillRect(sx,sy+z*.2,z,z*.8);ctx.fillStyle='#ff7a18';ctx.fillRect(sx+z*.25,sy+z*.55,z*.5,z*.3)}else if(t==10){ctx.fillRect(sx,sy+z*.3,z,z*.2);ctx.fillRect(sx+z*.1,sy+z*.5,z*.15,z*.5);ctx.fillRect(sx+z*.75,sy+z*.5,z*.15,z*.5)}
 else{ctx.fillRect(sx,sy,z,z);const v=hash(x,y)*.16-.08;ctx.fillStyle=v>0?`rgba(255,255,255,${v})`:`rgba(0,0,0,${-v})`;ctx.fillRect(sx,sy,z,z);
 if(t==2){ctx.fillStyle='#3fa13f';ctx.fillRect(sx,sy,z,z*.28);ctx.fillStyle='#2e7d32';ctx.fillRect(sx+z*(hash(x,1)*.7),sy+z*.2,z*.15,z*.15)}
-if(t==6||t==7){ctx.fillStyle=t==6?'#f0a060':'#e8ddd0';for(let i=0;i<3;i++)ctx.fillRect(sx+z*(.1+hash(x+i,y)*.7),sy+z*(.1+hash(x,y+i)*.7),z*.2,z*.2)}
+if(t==6||t==7||t==12){ctx.fillStyle=t==6?'#f0a060':t==12?'#fff3a0':'#e8ddd0';for(let i=0;i<3;i++)ctx.fillRect(sx+z*(.1+hash(x+i,y)*.7),sy+z*(.1+hash(x,y+i)*.7),z*.2,z*.2)}
 if(t==3){ctx.fillStyle='rgba(0,0,0,.15)';ctx.fillRect(sx+z*(hash(x,y+9)*.7),sy+z*(hash(x+9,y)*.7),z*.25,z*.18)}
 if(get(x,y-1)==0&&t!=2&&SOLID.has(t)){ctx.fillStyle='rgba(255,255,255,.12)';ctx.fillRect(sx,sy,z,z*.1)}}}
 let dk=dp+(1-dp)*nightD;if(t!=9||1){let best=0;for(const L of lights){const q=Math.hypot(x+.5-L.x,y+.5-L.y),v=(1-q/L.r)*L.s;if(v>best)best=v}dk*=1-Math.max(0,best)}
@@ -156,8 +174,8 @@ if(dk>.01){ctx.fillStyle=`rgba(0,0,0,${dk})`;ctx.fillRect(sx,sy,z,z)}}
 if(aim.d||tg==null){const tx=Math.floor(aim.x),ty=Math.floor(aim.y);if(aim.d){ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.strokeRect((tx-cx)*ts,(ty-cy)*ts,ts,ts);
 if(mine.p>0&&get(tx,ty)){ctx.fillStyle=`rgba(0,0,0,${Math.min(.7,mine.p/(T[get(tx,ty)].h*(.22-.08*P.pick)))})`;ctx.fillRect((tx-cx)*ts,(ty-cy)*ts,ts,ts)}}}
 // mobs
-for(const m of mobs){const sx=px(m.x),sy=(m.y-cy)*ts,w=m.w*ts,h=m.h*ts;ctx.fillStyle='rgba(70,140,255,.85)';ctx.beginPath();ctx.ellipse(sx+w/2,sy+h*.6,w/2,h*.55,0,0,7);ctx.fill();
-ctx.fillStyle='#fff';ctx.fillRect(sx+w*.3,sy+h*.3,w*.12,h*.2);ctx.fillRect(sx+w*.6,sy+h*.3,w*.12,h*.2)}
+for(const m of mobs){const sx=px(m.x),sy=(m.y-cy)*ts,w=m.w*ts,h=m.h*ts;ctx.fillStyle=m.boss?'rgba(130,70,210,.92)':m.z?'#3d7a4a':'rgba(70,140,255,.85)';ctx.beginPath();ctx.ellipse(sx+w/2,sy+h*.6,w/2,h*.55,0,0,7);ctx.fill();
+ctx.fillStyle='#fff';ctx.fillRect(sx+w*.3,sy+h*.3,w*.12,h*.2);ctx.fillRect(sx+w*.6,sy+h*.3,w*.12,h*.2);if(m.boss){ctx.fillStyle='#000a';ctx.fillRect(sx,sy-12,w,8);ctx.fillStyle='#e33';ctx.fillRect(sx,sy-12,w*Math.max(0,m.hp)/m.mh,8)}}
 // player
 const sx=px(P.x),sy=(P.y-cy)*ts,u=ts;if(P.hurt>0&&Math.floor(P.hurt*20)%2)ctx.globalAlpha=.5;
 ctx.fillStyle='#e8b98a';ctx.fillRect(sx+u*.05,sy,u*.6,u*.7);ctx.fillStyle='#5a3a1a';ctx.fillRect(sx+u*.05,sy,u*.6,u*.22);
@@ -165,7 +183,20 @@ ctx.fillStyle='#000';ctx.fillRect(sx+(P.face>0?u*.45:u*.12),sy+u*.35,u*.1,u*.1);
 ctx.fillStyle='#3a6fd0';ctx.fillRect(sx,sy+u*.7,u*.7,u*1);ctx.fillStyle='#2a3a7a';ctx.fillRect(sx+u*.05,sy+u*1.7,u*.6,u*.8);
 if(swing>0){ctx.strokeStyle='#ddd';ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(sx+u*.35,sy+u*1.1);ctx.lineTo((aim.x-cx)*ts,(aim.y-cy)*ts);ctx.stroke()}
 ctx.globalAlpha=1;
-document.getElementById('hpf').style.width=Math.max(0,P.hp)+'%'}
+for(const id in others){if(id==myId)continue;const o=others[id],ox=px(o.x),oy=(o.y-cy)*ts;ctx.fillStyle='#e8b98a';ctx.fillRect(ox+u*.05,oy,u*.6,u*.7);ctx.fillStyle='#b03030';ctx.fillRect(ox,oy+u*.7,u*.7,u);ctx.fillStyle='#4a2a2a';ctx.fillRect(ox+u*.05,oy+u*1.7,u*.6,u*.8);ctx.fillStyle='#fff';ctx.font=ts*.45+'px sans-serif';ctx.textAlign='center';ctx.fillText(o.n,ox+u*.35,oy-4)}
+document.getElementById('on').textContent=online?'🌐 '+Object.keys(others).length+' онлайн':'📴 оффлайн';document.getElementById('hpf').style.width=Math.max(0,P.hp)+'%'}
+// ONLINE
+let ws,others={},myId=null,online=false,got=false;
+const nm=(tg&&tg.initDataUnsafe&&tg.initDataUnsafe.user&&tg.initDataUnsafe.user.first_name)||'Игрок'+Math.floor(Math.random()*99);
+function b64(){let s='';for(let i=0;i<tiles.length;i+=8000)s+=String.fromCharCode.apply(null,tiles.subarray(i,i+8000));return btoa(s)}
+function setT(x,y,v){tiles[y*W+x]=v;if(online)ws.send(JSON.stringify({t:'s',x,y,v}))}
+function conn(){try{ws=new WebSocket((location.protocol=='https:'?'wss://':'ws://')+location.host)}catch(e){return}
+ws.onopen=()=>{online=true;say('🌐 Онлайн')};ws.onclose=()=>{online=false;others={};setTimeout(conn,3000)};
+ws.onmessage=e=>{const m=JSON.parse(e.data);
+if(m.t=='world'){const q=atob(m.w);for(let i=0;i<q.length;i++)tiles[i]=q.charCodeAt(i);surf=m.surf;if(!got){got=true;spawnP()}}
+else if(m.t=='need'){got=true;ws.send(JSON.stringify({t:'init',w:b64(),surf}))}
+else if(m.t=='s')tiles[m.y*W+m.x]=m.v;else if(m.t=='ps')others=m.p;else if(m.t=='id')myId=String(m.id)}}
+setInterval(()=>{if(online)ws.send(JSON.stringify({t:'p',x:P.x,y:P.y,f:P.face,n:nm}))},100);conn();
 let last=performance.now();
 function loop(n){const dt=Math.min(.033,(n-last)/1000);last=n;update(dt);draw();if(dirty)hbRender();requestAnimationFrame(loop)}
 hbRender();requestAnimationFrame(loop);
