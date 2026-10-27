@@ -6,8 +6,11 @@ const BASE = process.env.WEBAPP_URL || process.env.RENDER_EXTERNAL_URL;
 const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
-app.use(express.static(__dirname));
-app.get('/', (req, res) => res.sendFile(__dirname + '/index.html'));
+ const fs = require('fs');
+   const path = require('path');
+   const dir = [__dirname, path.join(__dirname, 'public')].find(d => fs.existsSync(path.join(d, 'index.html')));
+   console.log('Папка с игрой:', dir);
+   app.use(express.static(dir || __dirname));
 app.get('/health', (_, r) => r.send('ok'));
 
 const api = (method, body) =>
