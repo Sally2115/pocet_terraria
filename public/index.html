@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-<title>Pocket Terraria / Craft</title>
+<title>Pocket Terraria - Micro Edition</title>
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
@@ -25,7 +25,7 @@
     position: absolute; top: 10px; left: 10px; display: flex; flex-direction: column; gap: 4px;
   }
   .bar-box {
-    width: 140px; height: 14px; background: #111; border: 2px solid #333;
+    width: 130px; height: 12px; background: #111; border: 2px solid #333;
     position: relative; box-shadow: 0 2px 0 #000;
   }
   .bar-fill { height: 100%; transition: width 0.1s; }
@@ -33,45 +33,45 @@
   #arm-fill { background: #3498db; width: 0%; }
   .bar-text {
     position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
-    font-size: 6px; text-shadow: 1px 1px 0 #000;
+    font-size: 5px; text-shadow: 1px 1px 0 #000;
   }
 
   /* Хотбар */
   #hotbar {
-    position: absolute; top: 46px; left: 10px; display: flex; gap: 4px; pointer-events: auto;
+    position: absolute; top: 40px; left: 10px; display: flex; gap: 3px; pointer-events: auto;
   }
   .slot {
-    width: 34px; height: 34px; background: #2a1f18; border: 2px solid #5c4033;
+    width: 30px; height: 30px; background: #2a1f18; border: 2px solid #5c4033;
     display: flex; align-items: center; justify-content: center; position: relative; cursor: pointer;
   }
-  .slot.active { border-color: #f1c40f; background: #4a3525; box-shadow: 0 0 6px #f1c40f88; }
-  .slot i { width: 16px; height: 16px; display: block; }
-  .slot u { position: absolute; right: 2px; bottom: 2px; font-size: 6px; text-decoration: none; text-shadow: 1px 1px 0 #000; }
+  .slot.active { border-color: #f1c40f; background: #4a3525; box-shadow: 0 0 5px #f1c40f88; }
+  .slot i { width: 14px; height: 14px; display: block; image-rendering: pixelated; }
+  .slot u { position: absolute; right: 2px; bottom: 1px; font-size: 5px; text-decoration: none; text-shadow: 1px 1px 0 #000; }
 
-  /* Кнопки */
+  /* Кнопки управления */
   .btn {
-    position: absolute; background: #2a1f18; border: 3px solid #5c4033;
+    position: absolute; background: #2a1f18; border: 2px solid #5c4033;
     display: flex; align-items: center; justify-content: center;
-    font-size: 16px; pointer-events: auto; touch-action: none; color: #f1c40f;
-    box-shadow: 0 4px 0 #000;
+    font-size: 14px; pointer-events: auto; touch-action: none; color: #f1c40f;
+    box-shadow: 0 3px 0 #000;
   }
-  .btn:active { transform: translateY(2px); box-shadow: 0 2px 0 #000; }
-  #btn-l { left: 10px; bottom: 16px; width: 54px; height: 54px; }
-  #btn-r { left: 70px; bottom: 16px; width: 54px; height: 54px; }
-  #btn-j { right: 10px; bottom: 16px; width: 62px; height: 62px; font-size: 18px; }
-  #btn-a { right: 80px; bottom: 16px; width: 54px; height: 54px; font-size: 18px; color: #e74c3c; }
-  #btn-c { right: 10px; top: 10px; width: 44px; height: 44px; font-size: 16px; }
+  .btn:active { transform: translateY(2px); box-shadow: 0 1px 0 #000; }
+  #btn-l { left: 10px; bottom: 12px; width: 48px; height: 48px; }
+  #btn-r { left: 64px; bottom: 12px; width: 48px; height: 48px; }
+  #btn-j { right: 10px; bottom: 12px; width: 56px; height: 56px; font-size: 16px; }
+  #btn-a { right: 72px; bottom: 12px; width: 48px; height: 48px; font-size: 14px; color: #e74c3c; }
+  #btn-c { right: 10px; top: 10px; width: 38px; height: 38px; font-size: 14px; }
 
-  /* Окно Инвентаря / Крафта */
+  /* Меню */
   #panel {
-    position: absolute; inset: 60px 10px 85px; background: #1a130e; border: 4px solid #5c4033;
-    padding: 10px; overflow-y: auto; display: none; pointer-events: auto; z-index: 20;
+    position: absolute; inset: 55px 10px 75px; background: #1a130e; border: 3px solid #5c4033;
+    padding: 8px; overflow-y: auto; display: none; pointer-events: auto; z-index: 20;
   }
-  .panel-title { font-size: 9px; color: #f1c40f; margin-bottom: 8px; border-bottom: 2px solid #5c4033; padding-bottom: 4px; }
-  .r { display: flex; justify-content: space-between; align-items: center; background: #281d15; border: 2px solid #3d2c20; padding: 6px; margin-bottom: 4px; font-size: 7px; }
-  .r button { background: #27ae60; border: 2px solid #1e8449; color: #fff; font-family: inherit; font-size: 7px; padding: 5px 8px; cursor: pointer; }
+  .panel-title { font-size: 8px; color: #f1c40f; margin-bottom: 6px; border-bottom: 2px solid #5c4033; padding-bottom: 3px; }
+  .r { display: flex; justify-content: space-between; align-items: center; background: #281d15; border: 2px solid #3d2c20; padding: 5px; margin-bottom: 3px; font-size: 6px; }
+  .r button { background: #27ae60; border: 2px solid #1e8449; color: #fff; font-family: inherit; font-size: 6px; padding: 4px 6px; cursor: pointer; }
   .r button:disabled { background: #444; border-color: #222; opacity: 0.5; }
-  #msg { position: absolute; bottom: 85px; left: 0; right: 0; text-align: center; font-size: 8px; color: #f1c40f; text-shadow: 1px 1px #000; pointer-events: none; }
+  #msg { position: absolute; bottom: 75px; left: 0; right: 0; text-align: center; font-size: 7px; color: #f1c40f; text-shadow: 1px 1px #000; pointer-events: none; }
 </style>
 </head>
 <body>
@@ -92,7 +92,7 @@
 </div>
 
 <script>
-const W = 300, H = 120;
+const W = 350, H = 140; // Большой мир
 const T = {
   1: { c: '#5c4033', h: 1, d: 1, n: 'Земля' },
   2: { c: '#2ecc71', h: 1, d: 1, n: 'Трава' },
@@ -117,7 +117,7 @@ let tiles = new Uint8Array(W * H), surf = [];
 
 function gen() {
   for (let x = 0; x < W; x++) {
-    const s = Math.floor(30 + Math.sin(x * 0.04) * 6 + Math.cos(x * 0.01) * 10);
+    const s = Math.floor(35 + Math.sin(x * 0.04) * 8 + Math.cos(x * 0.01) * 12);
     surf[x] = s;
     for (let y = 0; y < H; y++) {
       let id = 0;
@@ -125,11 +125,11 @@ function gen() {
         id = (y === s) ? 2 : (y < s + 5 ? 1 : 3);
         if (id === 3) {
           const r = Math.random();
-          if (r < 0.04) id = 6;      // Медь
-          else if (r < 0.07) id = 7; // Железо
-          else if (r < 0.085) id = 11; // Золото
+          if (r < 0.04) id = 6;
+          else if (r < 0.075) id = 7;
+          else if (r < 0.09) id = 11;
         }
-        if (y > s + 6 && Math.sin(x * 0.2) * Math.cos(y * 0.2) > 0.65) id = 0; // Пещеры
+        if (y > s + 6 && Math.sin(x * 0.25) * Math.cos(y * 0.25) > 0.62) id = 0;
       }
       tiles[y * W + x] = id;
     }
@@ -137,22 +137,22 @@ function gen() {
 }
 gen();
 
-// Игрок
+// Ультра-маленький персонаж (размером меньше блока: ширина 0.5, высота 1.1)
 const P = {
-  x: W / 2, y: 10, w: 0.8, h: 1.8, vx: 0, vy: 0,
+  x: W / 2, y: 10, w: 0.5, h: 1.1, vx: 0, vy: 0,
   on: false, hp: 100, maxHp: 100, armor: 0,
   face: 1, hurt: 0, sword: 0, pick: 0, swing: 0
 };
 
-let inv = { 8: 10, 9: 5 }, sel = 0, mobs = [], keys = {}, aim = { d: false, x: 0, y: 0, id: -1 }, mine = { x: -1, y: -1, p: 0 }, cd = 0;
+let inv = { 8: 15, 9: 10 }, sel = 0, mobs = [], keys = {}, aim = { d: false, x: 0, y: 0, id: -1 }, mine = { x: -1, y: -1, p: 0 }, cd = 0;
 
 const cv = document.getElementById('c'), ctx = cv.getContext('2d');
-let ts = 20, VW = 0, VH = 0, cx = 0, cy = 0;
+let ts = 12, VW = 0, VH = 0, cx = 0, cy = 0; // Маленький размер тайла (ts=12) для максимального обзора экрана
 
 function rs() {
   cv.width = window.innerWidth; cv.height = window.innerHeight;
   ctx.imageSmoothingEnabled = false;
-  ts = Math.max(16, Math.floor(cv.width / 22));
+  ts = Math.max(10, Math.floor(cv.width / 36)); // Очень широкий охват камеры
   VW = cv.width / ts; VH = cv.height / ts;
 }
 addEventListener('resize', rs); rs();
@@ -170,13 +170,13 @@ document.getElementById('btn-a').onclick = () => attack();
 
 function attack() {
   P.swing = 0.2;
-  const range = 2.5;
+  const range = 2.0;
   mobs.forEach(m => {
     const dist = Math.hypot((m.x + m.w/2) - (P.x + P.w/2), (m.y + m.h/2) - (P.y + P.h/2));
     if (dist < range) {
       const dmg = 10 + P.sword * 10;
       m.hp -= dmg;
-      m.vy = -5; m.vx = P.face * 5;
+      m.vy = -4; m.vx = P.face * 4;
       say('Урон мобу: -' + dmg);
     }
   });
@@ -218,7 +218,6 @@ function say(t) {
   clearTimeout(say.t); say.t = setTimeout(() => m.textContent = '', 2000);
 }
 
-// Крафт рецепты
 const REC = [
   { n: 'Верстак', c: { 8: 5 }, o: [10, 1] },
   { n: 'Факелы x4', c: { 8: 1, 21: 1 }, o: [9, 4] },
@@ -230,7 +229,7 @@ const REC = [
 
 function craftUI() {
   const p = document.getElementById('panel');
-  p.innerHTML = '<div class="panel-title">ІНВЕНТАРЬ И КРАФТ</div>';
+  p.innerHTML = '<div class="panel-title">ИНВЕНТАРЬ И КРАФТ</div>';
   REC.forEach(r => {
     const ok = Object.entries(r.c).every(([k, v]) => (inv[k] || 0) >= v);
     const d = document.createElement('div'); d.className = 'r';
@@ -265,15 +264,14 @@ function hit(e) {
 let mobTimer = 0;
 function update(dt) {
   const l = hold.l || keys.KeyA || keys.ArrowLeft, r = hold.r || keys.KeyD || keys.ArrowRight, j = hold.j || keys.Space || keys.KeyW || keys.ArrowUp;
-  const tv = (r - l) * 7; if (tv) P.face = tv > 0 ? 1 : -1;
-  P.vx += (tv - P.vx) * Math.min(1, dt * 15);
+  const tv = (r - l) * 8; if (tv) P.face = tv > 0 ? 1 : -1;
+  P.vx += (tv - P.vx) * Math.min(1, dt * 20);
   
-  if (j && P.on) { P.vy = -16; P.on = false; }
-  P.vy = Math.min(P.vy + 45 * dt, 35);
+  if (j && P.on) { P.vy = -14; P.on = false; }
+  P.vy = Math.min(P.vy + 45 * dt, 30);
   P.hurt = Math.max(0, P.hurt - dt);
   P.swing = Math.max(0, P.swing - dt);
 
-  // Физика X/Y
   P.x += P.vx * dt;
   if (hit(P)) { P.x = P.vx > 0 ? Math.floor(P.x + P.w) - P.w - 0.001 : Math.floor(P.x) + 1.001; P.vx = 0; }
 
@@ -286,7 +284,6 @@ function update(dt) {
 
   if (P.y > H || P.hp <= 0) { P.x = W / 2; P.y = 10; P.vy = 0; P.hp = 100; say('Возрождение!'); }
 
-  // Взаимодействие
   cd -= dt;
   if (aim.d) {
     const tx = Math.floor(aim.x), ty = Math.floor(aim.y);
@@ -297,7 +294,7 @@ function update(dt) {
       const idx = ty * W + tx;
       if (tx >= 0 && tx < W && ty >= 0 && ty < H && tiles[idx] > 0) {
         mine.p += dt;
-        if (mine.p >= 0.3) {
+        if (mine.p >= 0.25) {
           const t = tiles[idx]; tiles[idx] = 0;
           if (T[t] && T[t].d) { inv[T[t].d] = (inv[T[t].d] || 0) + 1; hbRender(); }
           mine.p = 0;
@@ -306,47 +303,45 @@ function update(dt) {
     } else if (typeof it == 'number' && dist < 6 && cd <= 0 && inv[it] > 0) {
       const idx = ty * W + tx;
       if (tx >= 0 && tx < W && ty >= 0 && ty < H && tiles[idx] == 0) {
-        tiles[idx] = it; inv[it]--; cd = 0.15; hbRender();
+        tiles[idx] = it; inv[it]--; cd = 0.12; hbRender();
       }
     }
   }
 
-  // Мобы
+  // Спавн мобов
   mobTimer += dt;
-  if (mobTimer > 6 && mobs.length < 4) {
+  if (mobTimer > 5 && mobs.length < 5) {
     mobTimer = 0;
-    const mx = P.x + (Math.random() < 0.5 ? -15 : 15);
+    const mx = P.x + (Math.random() < 0.5 ? -20 : 20);
     const my = surf[Math.floor(Math.max(0, Math.min(W-1, mx)))] - 2;
-    if (mx > 2 && mx < W - 2) mobs.push({ x: mx, y: my, w: 1, h: 1.5, hp: 25, vx: 0, vy: 0 });
+    if (mx > 2 && mx < W - 2) mobs.push({ x: mx, y: my, w: 0.6, h: 0.8, hp: 20, vx: 0, vy: 0 }); // Ультра-маленький моб
   }
 
   mobs = mobs.filter(m => {
     m.vy = Math.min(m.vy + 40 * dt, 30);
-    m.vx = (P.x > m.x ? 1 : -1) * 2;
+    m.vx = (P.x > m.x ? 1 : -1) * 2.2;
     
-    // Физика моба
     m.x += m.vx * dt;
     m.y += m.vy * dt;
 
-    if (P.hurt <= 0 && Math.abs(P.x - m.x) < 0.8 && Math.abs(P.y - m.y) < 1.2) {
-      const realDmg = Math.max(2, 12 - P.armor * 0.3);
+    if (P.hurt <= 0 && Math.abs(P.x - m.x) < 0.6 && Math.abs(P.y - m.y) < 0.9) {
+      const realDmg = Math.max(2, 10 - P.armor * 0.3);
       P.hp -= realDmg; P.hurt = 0.8;
-      P.vy = -6; P.vx = (P.x < m.x ? -1 : 1) * 5;
+      P.vy = -5; P.vx = (P.x < m.x ? -1 : 1) * 4;
       say('Урон: -' + Math.floor(realDmg));
     }
 
     if (m.hp <= 0) {
-      inv[20] = (inv[20] || 0) + 1; // Кожа
-      inv[21] = (inv[21] || 0) + 2; // Гель
-      hbRender(); say('Моб повержен! Выпали ресурсы');
+      inv[20] = (inv[20] || 0) + 1;
+      inv[21] = (inv[21] || 0) + 2;
+      hbRender(); say('Моб повержен!');
       return false;
     }
-    return Math.abs(m.x - P.x) < 30;
+    return Math.abs(m.x - P.x) < 40;
   });
 }
 
 function draw() {
-  // Небо
   ctx.fillStyle = '#1e293b'; ctx.fillRect(0, 0, cv.width, cv.height);
 
   cx = Math.max(0, Math.min(W - VW, P.x + P.w / 2 - VW / 2));
@@ -354,7 +349,7 @@ function draw() {
 
   const x0 = Math.floor(cx), y0 = Math.floor(cy), x1 = Math.ceil(cx + VW), y1 = Math.ceil(cy + VH);
 
-  // Отрисовка блоков
+  // Отрисовка тайлов
   for (let y = y0; y <= y1; y++) {
     for (let x = x0; x <= x1; x++) {
       const t = tiles[y * W + x];
@@ -365,19 +360,19 @@ function draw() {
     }
   }
 
-  // Отрисовка Моб
+  // Отрисовка маленьких мобов
   mobs.forEach(m => {
-    ctx.fillStyle = '#27ae60';
+    ctx.fillStyle = '#2ecc71';
     ctx.fillRect(Math.floor((m.x - cx) * ts), Math.floor((m.y - cy) * ts), Math.floor(m.w * ts), Math.floor(m.h * ts));
   });
 
-  // Отрисовка Игрока (Четкий пиксельный персонаж)
+  // Отрисовка ЧЕТКОГО И УЛЬТРА-МАЛЕНЬКОГО ПЕРСОНАЖА
   const px = Math.floor((P.x - cx) * ts), py = Math.floor((P.y - cy) * ts);
   const pw = Math.floor(P.w * ts), ph = Math.floor(P.h * ts);
 
   if (P.hurt > 0 && Math.floor(Date.now() / 80) % 2) ctx.globalAlpha = 0.4;
 
-  // Тело
+  // Тело персонажа
   ctx.fillStyle = P.armor > 0 ? (P.armor > 20 ? '#bdc3c7' : '#8d6e63') : '#e74c3c';
   ctx.fillRect(px, py + ph * 0.3, pw, ph * 0.7);
 
@@ -385,19 +380,15 @@ function draw() {
   ctx.fillStyle = '#ffcc99';
   ctx.fillRect(px + pw * 0.1, py, pw * 0.8, ph * 0.35);
 
-  // Глаз
-  ctx.fillStyle = '#000';
-  ctx.fillRect(px + (P.face > 0 ? pw * 0.6 : pw * 0.2), py + ph * 0.1, pw * 0.2, ph * 0.1);
-
-  // Меч в руке при атаке
+  // Оружие в руке при ударе
   if (P.swing > 0) {
     ctx.fillStyle = P.sword > 0 ? '#bdc3c7' : '#7f8c8d';
-    ctx.fillRect(px + (P.face > 0 ? pw : -pw), py + ph * 0.2, pw * 1.2, ph * 0.2);
+    ctx.fillRect(px + (P.face > 0 ? pw : -pw * 0.8), py + ph * 0.4, pw * 0.8, ph * 0.2);
   }
 
   ctx.globalAlpha = 1.0;
 
-  // Обновление баров
+  // Обновление интерфейса
   document.getElementById('hp-fill').style.width = Math.max(0, P.hp) + '%';
   document.getElementById('hp-txt').textContent = `${Math.max(0, Math.floor(P.hp))} / 100`;
   document.getElementById('arm-fill').style.width = Math.min(100, (P.armor / 30) * 100) + '%';
