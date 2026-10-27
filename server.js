@@ -6,7 +6,7 @@ const BASE = process.env.WEBAPP_URL || process.env.RENDER_EXTERNAL_URL;
 const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
-app.use(express.static('public'));
+app.use(express.static(__dirname));
 app.get('/health', (_, r) => r.send('ok'));
 
 const api = (method, body) =>
