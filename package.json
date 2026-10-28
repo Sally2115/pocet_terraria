@@ -1,5 +1,5 @@
 {
-  "name": "pocket-terraria",
+  "name": "sector-9-echo",
   "version": "1.0.0",
   "main": "server.js",
   "scripts": {
@@ -9,7 +9,6 @@
     "node": ">=18"
   },
   "dependencies": {
-    "express": "^4.19.2",
-    "ws": "^8.16.0"
+    "express": "^4.19.2"
   }
 }

@@ -2,406 +2,290 @@
 <html lang="ru">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-<title>Pocket Terraria - Micro Edition</title>
-<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<title>SECTOR-9: ЭХО</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
-  * { box-sizing: border-box; }
-  html, body {
-    margin: 0; padding: 0; width: 100%; height: 100%;
-    background: #050b14; overflow: hidden; touch-action: none;
-    user-select: none; -webkit-user-select: none;
-    font-family: 'Press Start 2P', monospace; color: #fff;
-  }
-  canvas {
-    display: block; width: 100%; height: 100%;
-    image-rendering: pixelated; image-rendering: crisp-edges;
-  }
-  #ui { position: fixed; inset: 0; pointer-events: none; z-index: 10; }
-  
-  /* Шкалы */
-  #stats-panel {
-    position: absolute; top: 10px; left: 10px; display: flex; flex-direction: column; gap: 4px;
-  }
-  .bar-box {
-    width: 130px; height: 12px; background: #111; border: 2px solid #333;
-    position: relative; box-shadow: 0 2px 0 #000;
-  }
-  .bar-fill { height: 100%; transition: width 0.1s; }
-  #hp-fill { background: #e74c3c; width: 100%; }
-  #arm-fill { background: #3498db; width: 0%; }
-  .bar-text {
-    position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
-    font-size: 5px; text-shadow: 1px 1px 0 #000;
-  }
-
-  /* Хотбар */
-  #hotbar {
-    position: absolute; top: 40px; left: 10px; display: flex; gap: 3px; pointer-events: auto;
-  }
-  .slot {
-    width: 30px; height: 30px; background: #2a1f18; border: 2px solid #5c4033;
-    display: flex; align-items: center; justify-content: center; position: relative; cursor: pointer;
-  }
-  .slot.active { border-color: #f1c40f; background: #4a3525; box-shadow: 0 0 5px #f1c40f88; }
-  .slot i { width: 14px; height: 14px; display: block; image-rendering: pixelated; }
-  .slot u { position: absolute; right: 2px; bottom: 1px; font-size: 5px; text-decoration: none; text-shadow: 1px 1px 0 #000; }
-
-  /* Кнопки управления */
-  .btn {
-    position: absolute; background: #2a1f18; border: 2px solid #5c4033;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 14px; pointer-events: auto; touch-action: none; color: #f1c40f;
-    box-shadow: 0 3px 0 #000;
-  }
-  .btn:active { transform: translateY(2px); box-shadow: 0 1px 0 #000; }
-  #btn-l { left: 10px; bottom: 12px; width: 48px; height: 48px; }
-  #btn-r { left: 64px; bottom: 12px; width: 48px; height: 48px; }
-  #btn-j { right: 10px; bottom: 12px; width: 56px; height: 56px; font-size: 16px; }
-  #btn-a { right: 72px; bottom: 12px; width: 48px; height: 48px; font-size: 14px; color: #e74c3c; }
-  #btn-c { right: 10px; top: 10px; width: 38px; height: 38px; font-size: 14px; }
-
-  /* Меню */
-  #panel {
-    position: absolute; inset: 55px 10px 75px; background: #1a130e; border: 3px solid #5c4033;
-    padding: 8px; overflow-y: auto; display: none; pointer-events: auto; z-index: 20;
-  }
-  .panel-title { font-size: 8px; color: #f1c40f; margin-bottom: 6px; border-bottom: 2px solid #5c4033; padding-bottom: 3px; }
-  .r { display: flex; justify-content: space-between; align-items: center; background: #281d15; border: 2px solid #3d2c20; padding: 5px; margin-bottom: 3px; font-size: 6px; }
-  .r button { background: #27ae60; border: 2px solid #1e8449; color: #fff; font-family: inherit; font-size: 6px; padding: 4px 6px; cursor: pointer; }
-  .r button:disabled { background: #444; border-color: #222; opacity: 0.5; }
-  #msg { position: absolute; bottom: 75px; left: 0; right: 0; text-align: center; font-size: 7px; color: #f1c40f; text-shadow: 1px 1px #000; pointer-events: none; }
+:root{--bg:#08090a;--pn:#111315;--ln:#2b2e32;--tx:#bcc1c6;--dm:#70767c;--rd:#b3261e;--fs:16px;color-scheme:dark}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;margin:0;background:var(--bg);color:var(--tx)}
+body{font:var(--fs)/1.6 "Courier New",ui-monospace,monospace}
+body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:9;background:repeating-linear-gradient(0deg,rgba(0,0,0,.22) 0 1px,transparent 1px 3px),radial-gradient(ellipse at center,transparent 55%,rgba(0,0,0,.55))}
+@keyframes fl{0%,95%,100%{opacity:1}96%{opacity:.8}97%{opacity:1}98%{opacity:.65;transform:translateX(2px)}99%{opacity:1}}
+.fx #app{animation:fl 8s infinite}
+@media(prefers-reduced-motion:reduce){.fx #app{animation:none}}
+#app{max-width:640px;margin:0 auto;min-height:100%;padding:calc(env(safe-area-inset-top,0px) + 12px) 16px calc(env(safe-area-inset-bottom,0px) + 16px);display:flex;flex-direction:column}
+h1{font-size:2.6em;letter-spacing:.35em;margin:.3em 0 .1em;color:#e8eaec;font-weight:400}
+.dm{color:var(--dm);font-size:.8em}.rd{color:var(--rd)}
+.sp{flex:1}
+.b{display:block;width:100%;text-align:left;background:var(--pn);border:1px solid var(--ln);color:var(--tx);padding:13px 14px;margin:8px 0;font:inherit;cursor:pointer;border-radius:0}
+.b:hover,.b:active,.b:focus-visible{border-color:var(--rd);color:#fff;outline:none}
+.b.sel{border-color:var(--rd);background:#1a1011}
+.b small{display:block;color:var(--dm);font-size:.8em;margin-top:2px}
+.b:disabled{opacity:.4}
+.hud{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;font-size:.7em;color:var(--dm);padding-bottom:10px;border-bottom:1px solid var(--ln)}
+.bar{height:4px;background:#1b1d20;margin-top:4px}.bar i{display:block;height:100%}
+.loc{color:var(--rd);font-size:.8em;margin:16px 0 8px}
+.tx{min-height:7em;white-space:pre-wrap}
+.nt{color:var(--dm);font-size:.85em;border-left:2px solid var(--rd);padding-left:10px;margin:8px 0}
+.hint{color:#6f8a6f;font-size:.8em;margin:8px 0}
+#ch{transition:opacity .5s}#ch.off{opacity:0;pointer-events:none}
+.row{display:flex;gap:8px}.row .b{text-align:center;font-size:.8em;padding:10px 4px}
+.ov{position:fixed;inset:0;background:rgba(5,6,7,.94);z-index:8;padding:calc(env(safe-area-inset-top,0px) + 16px) 16px 16px;overflow:auto}
+.ov>div{max-width:640px;margin:0 auto}
+input[type=range]{width:100%;accent-color:#b3261e}
+.cl{border-bottom:1px solid var(--ln);padding:10px 0}.cl b{color:#e8eaec;font-weight:400}
 </style>
 </head>
 <body>
-<canvas id="c"></canvas>
-<div id="ui">
-  <div id="stats-panel">
-    <div class="bar-box"><div class="bar-fill" id="hp-fill"></div><div class="bar-text" id="hp-txt">100 / 100</div></div>
-    <div class="bar-box"><div class="bar-fill" id="arm-fill"></div><div class="bar-text" id="arm-txt">Защита: 0</div></div>
-  </div>
-  <div id="hotbar"></div>
-  <div class="btn" id="btn-c">📦</div>
-  <div class="btn" id="btn-l">◀</div>
-  <div class="btn" id="btn-r">▶</div>
-  <div class="btn" id="btn-a">⚔️</div>
-  <div class="btn" id="btn-j">▲</div>
-  <div id="panel"></div>
-  <div id="msg"></div>
-</div>
-
+<div id="app"></div>
 <script>
-const W = 350, H = 140; // Большой мир
-const T = {
-  1: { c: '#5c4033', h: 1, d: 1, n: 'Земля' },
-  2: { c: '#2ecc71', h: 1, d: 1, n: 'Трава' },
-  3: { c: '#7f8c8d', h: 3, d: 3, n: 'Камень' },
-  4: { c: '#795548', h: 1.5, d: 8, n: 'Дерево' },
-  5: { c: '#27ae60', h: 0.3, d: 0, n: 'Листва' },
-  6: { c: '#e67e22', h: 4, d: 6, n: 'Медь' },
-  7: { c: '#bdc3c7', h: 5, d: 7, n: 'Железо' },
-  8: { c: '#8d6e63', h: 2, d: 8, n: 'Доски' },
-  9: { c: '#f1c40f', h: 0.1, d: 9, n: 'Факел' },
-  10:{ c: '#d35400', h: 1, d: 10, n: 'Верстак' },
-  11:{ c: '#f39c12', h: 6, d: 11, n: 'Золото' }
-};
+/* ===== Telegram / хранилище ===== */
+const tg=window.Telegram&&Telegram.WebApp;
+if(tg){try{tg.ready();tg.expand();tg.setHeaderColor('#08090a');tg.setBackgroundColor('#08090a')}catch(e){}}
+const CS=tg&&tg.CloudStorage;
+const LS=(k,v)=>{try{if(v===undefined)return JSON.parse(localStorage.getItem(k));localStorage.setItem(k,JSON.stringify(v))}catch(e){return null}};
+const cset=(k,v)=>{try{const j=JSON.stringify(v);if(CS&&j.length<4000)CS.setItem(k,j)}catch(e){}};
+const cget=k=>new Promise(r=>{try{CS?CS.getItem(k,(e,v)=>{try{r(v?JSON.parse(v):null)}catch(x){r(null)}}):r(null)}catch(e){r(null)}});
+const newer=(a,b)=>!a?b:!b?a:((b.ts||0)>(a.ts||0)?b:a);
 
-const ITEMS = {
-  1:'Земля', 3:'Камень', 6:'Медная руда', 7:'Железная руда', 8:'Доски', 9:'Факел', 10:'Верстак', 11:'Золотая руда',
-  20:'Кожа', 21:'Гель', 22:'Железный слиток', 23:'Золотой слиток', 24:'Кожаная броня', 25:'Железная броня'
-};
+/* ===== данные ===== */
+const app=document.getElementById('app');
+let S=null,M={end:[],seen:[],fx:70,amb:40,gl:1,fs:16,ts:0};
+const DF={easy:{n:'ИССЛЕДОВАТЕЛЬ',s:.6,u:.6,h:.6,bt:2,d:'Больше ресурсов, заметные подсказки, медленный Смотритель, мягкие последствия.'},
+mid:{n:'ОПЕРАТОР',s:1,u:1,h:1,bt:3,d:'Ограниченные припасы, частичные подсказки, внимательный Смотритель, серьёзные последствия.'},
+hard:{n:'НЕ ВОЗВРАЩАЙСЯ',s:1.6,u:1.5,h:1.4,bt:5,d:'Минимум ресурсов, почти нет подсказок, агрессивный Смотритель, который запоминает ваши приёмы.'}};
+const CH=['Последняя смена','Жилой блок','Медицинский сектор','Архив','Нулевой сигнал','Затопленный сектор','Допрос','Комната наблюдения','Оператор-0','Источник','Последний протокол','03:17'];
+const IT={'Батарейка':'Использовать: +50% заряда фонаря.','Аптечка':'Использовать: +40 здоровья.','Подавитель сигнала':'Использовать: снижает внимание Смотрителя.','Ключ-карта':'Открывает двери первого уровня доступа.','Фотографии':'Снимки сотрудников комплекса.','Диктофон':'Записывает голоса.','Плёнка':'Кодированная плёнка эксперимента.'};
+const CL={voice:['Запись 03:17','Твой голос, записанный 17 лет назад: «они снова заставили тебя забыть».'],
+log:['Журнал смен','Один и тот же день описан тремя разными документами.'],
+secret:['Радиоканал 9','Скрытый канал: короткие сообщения от других операторов.'],
+photo:['Снимки с будущей датой','На одном из них лицо, как у тебя.'],
+card:['Медкарта','Твоё имя, но другая дата рождения.'],
+pass:['Пропуска сотрудников','Цифры на пропусках складываются в код: 3-1-7-9.'],
+tape:['Кассеты','Расставленные по времени, они раскрывают скрытое сообщение.'],
+eva:['Противоречия Евы','Ева знала о твоей смене до твоего прихода.'],
+mirror:['Отражение','Выход существует только в зеркале.'],
+op0:['Записи Оператора-0','Он проходил ту же ночь и оставлял сообщения следующему.'],
+echo:['Протокол «Эхо»','Эксперимент копирует голоса, память и поведение людей.'],
+watch:['Запись Смотрителя','Он повторяет слова предупреждения твоим голосом.']};
+const ENDS={e1:'Эвакуация',e2:'Новый Смотритель',e3:'Нулевой пациент',e4:'Разорвать цикл',e5:'Тихая смена'};
+const FK=['…шаги за дверью. Или это эхо?','…кто-то шепчет твоё имя из вентиляции.','…радио щёлкнуло само. Показалось?','…тень в конце коридора сместилась.'];
 
-const SOLID = new Set([1,2,3,4,6,7,8,10,11]);
-let tiles = new Uint8Array(W * H), surf = [];
+const dg=(n,a,b,c)=>[{l:a,k:'hide',e:{s:-4,u:-10},n},{l:b,k:'distract',e:{u:8,s:-2},n},{l:c,k:'run',e:{h:-10,s:-3},n}];
+const SC={
+s1a:{ch:0,cp:1,l:'23:40 // ОПЕРАТОРСКАЯ',x:'Ты принимаешь смену. Пыльный пульт, три монитора, рация. По документам комплекс обесточен, но каналы связи почему-то живы. На столе лежат батарейки и аптечка, а в журнале смен чужой почерк.',h:'Припасы пригодятся позже.',c:[
+{l:'Взять батарейки и аптечку',e:{g:['Батарейка','Аптечка']},n:'s1b'},
+{l:'Изучить журнал смен',e:{c:'log',s:-2},n:'s1b'},
+{l:'Прослушать пустые каналы эфира',e:{c:'secret',s:-4,u:3},n:'s1b'}]},
+s1b:{ch:0,l:'03:17 // SIGNAL DETECTED',x:'Ты слышишь собственный голос из динамика: «Если ты слышишь это сообщение, значит, они снова заставили тебя забыть». Дата записи — 17 лет назад.\nНа камере появился коридор, которого нет на плане. За стеклом операторской кто-то медленно поворачивает голову.',h:'Запись — важная улика.',c:[
+{l:'Прослушать сообщение до конца',e:{c:'voice',s:-8,d:6},n:'s2a'},
+{l:'Переключить камеру и проверить коридор',e:{s:-4,u:6,d:3},n:'s2a'},
+{l:'Отключить питание радиоприёмника',e:{u:-4,f:'cut'},n:'s2a'}]},
+s2a:{ch:1,cp:1,l:'ЖИЛОЙ БЛОК // КОМНАТА 4',x:'Комнаты пропавших сотрудников. На тумбочке снимки: на одном дата стоит через три года, а лицо в кадре — твоё. В шкафу висит зеркало, в нём комната выглядит чуть иначе.',h:'Ключ-карта откроет двери позже.',c:[
+{l:'Забрать фотографии',e:{g:'Фотографии',c:'photo',s:-6,d:5},n:'s3a'},
+{l:'Всмотреться в отражение',e:{f:'mir1',s:-5,d:4},n:'s3a'},
+{l:'Взять ключ-карту из ящика',e:{g:'Ключ-карта',u:2},n:'s3a'}]},
+s3a:{ch:2,cp:1,l:'МЕДСЕКТОР // АРХИВ ПАЦИЕНТОВ',x:'Карты пациентов противоречат друг другу. В одной папке твоё имя, но другая дата рождения. Здесь впервые становится ясно: эксперименты были над памятью.\nЗа стеклом кто-то стоит неподвижно.',h:'Темнота снижает внимание Смотрителя.',c:[
+{l:'Забрать медкарту',e:{c:'card',d:8,s:-8},n:'s4a'},
+{l:'Обыскать шкафы: нужна аптечка',e:{g:'Аптечка',u:4},n:'s4a'},
+{l:'Выключить фонарь и переждать',e:{u:-8,s:-3,b:5},n:'s4a'}]},
+s4a:{ch:3,cp:1,l:'АРХИВ // ПЛЁНКА И ОТЧЁТЫ',x:'Старые плёнки, пропуска, три отчёта об одном дне. Время, номер смены и список сотрудников не совпадают. Чтобы восстановить цепочку событий, нужно сопоставить хотя бы два источника.',h:'Код доступа спрятан в пропусках.',c:[
+{l:'Сверить пропуска со сменой',e:{c:'pass',s:-2},n:'s4b'},
+{l:'Расставить кассеты по времени',e:{c:'tape',s:-3,u:3},n:'s4b'},
+{l:'Забрать кодированную плёнку',e:{g:'Плёнка',d:5,u:4},n:'s4b'}]},
+s4b:{ch:3,l:'04:02 // ДВЕРЬ В ГЕНЕРАТОРНУЮ',x:'Дверь заперта. Её можно открыть кодом, ключ-картой или грубым техническим обходом. Каждый путь стоит по-разному.',h:'Код — самый тихий путь.',c:[
+{l:'Ввести код с пропусков',r:'pass',e:{u:1},n:'s5a',e2:{u:8,h:-8},n2:'s5a'},
+{l:'Открыть ключ-картой',r:'Ключ-карта',e:{u:3},n:'s5a',e2:{u:8,s:-5},n2:'s5a'},
+{l:'Технический обход через панель',e:{u:6,h:-8,s:-3},n:'s5a'}]},
+s5a:{ch:4,cp:1,l:'ГЕНЕРАТОРНАЯ // НУЛЕВОЙ СИГНАЛ',x:'Генератор запущен. Нужно распределить питание между дверьми, камерами и вентиляцией. Неверный выбор шумит на весь сектор и отключает безопасный путь.',h:'Вентиляция даёт шанс найти полезный прибор.',c:[
+{l:'Питание на двери',e:{u:5,f:'doors'},n:'s5b'},
+{l:'Питание на камеры',e:{u:3,s:3,f:'cams'},n:'s5b'},
+{l:'Питание на вентиляцию',e:{g:'Подавитель сигнала',u:2,s:2},n:'s5b'}]},
+s5b:{ch:4,cp:2,dg:1,l:'ВСЕ МОНИТОРЫ // ОДИН КОРИДОР',x:'На всех экранах один и тот же коридор. По нему идёт Смотритель, и он идёт к тебе. Охота началась.\nВремя решать.',h:'Не повторяй один приём слишком часто.',c:dg('s6a','Спрятаться в техническом шкафу','Отвлечь: включить радиоприёмник','Рискнуть и добежать до аварийного шлюза')},
+s6a:{ch:5,cp:2,dg:1,l:'ЗАТОПЛЕННЫЙ СЕКТОР // НИЖНИЙ УРОВЕНЬ',x:'Вода по колено скрывает кабели и провалы. Шум воды глушит шаги, твои и его. Аварийные маяки мигают красным, а впереди что-то движется.',h:'Шум воды мешает услышать его заранее.',c:dg('s7a','Укрыться за стеллажом','Включить маяк в дальнем конце','Проплыть через затопленный шлюз')},
+s7a:{ch:6,cp:1,l:'ДОПРОС // КАНАЛ ЕВЫ',x:'Доктор Ева Морозова выходит на связь из неизвестного помещения: «Я пытаюсь помочь. Покажи, что ты нашёл». Она знает больше, чем говорит.',h:'Проверка слов Евы тоже раскрывает правду.',c:[
+{l:'Показать ей найденные улики',e:{t:15,d:4},n:'s8a'},
+{l:'Проверить её слова по журналу смен',r:'log',e:{c:'eva',t:-5,d:-4},n:'s8a',e2:{t:-3,s:-3},n2:'s8a'},
+{l:'Скрыть находки',e:{t:-12,f:'hid'},n:'s8a'}]},
+s8a:{ch:7,cp:1,l:'КОМНАТА НАБЛЮДЕНИЯ',x:'Карта комплекса больше не совпадает с реальностью. Появились комнаты без входа, коридоры отражаются не в ту сторону. Единственный выход, кажется, есть только в зеркале.',h:'Низкий рассудок мешает отличить реальный путь.',c:[
+{l:'Идти по карте',e:{s:-10,h:-8,u:4},n:'s9a'},
+{l:'Идти по отражению',e:{c:'mirror',s:-4,d:6},n:'s9a'},
+{l:'Вернуться по собственным следам',e:{b:-15,s:-2,u:3},n:'s9a'}]},
+s9a:{ch:8,cp:1,l:'ОПЕРАТОР-0 // ЗАПИСИ',x:'Записи первого участника программы: та же смена, те же решения, то же 03:17. Последняя кассета адресована следующему оператору. То есть тебе.',h:'Диктофон пригодится в лаборатории.',c:[
+{l:'Прослушать запись до конца',e:{c:'op0',s:-10,d:8},n:'s10a'},
+{l:'Уничтожить записи',e:{d:-8,s:2,f:'burn'},n:'s10a'},
+{l:'Забрать диктофон Оператора-0',e:{g:'Диктофон',s:-2},n:'s10a'}]},
+s10a:{ch:9,cp:1,l:'ЛАБОРАТОРИЯ // ИСТОЧНИК',x:'Эксперимент «Эхо» научился воспроизводить голоса, воспоминания и поведение людей. Остаётся вопрос: Смотритель — самостоятельное существо или результат многолетних копирований?',h:'Диктофон или подавитель помогут рядом с ним.',c:[
+{l:'Прочитать протокол эксперимента',e:{c:'echo',s:-8,d:6},n:'s11a'},
+{l:'Записать голос Смотрителя',r:'Диктофон',e:{c:'watch',u:6,s:-4},n:'s11a',e2:{u:8,s:-4},n2:'s11a'},
+{l:'Включить подавитель и пройти мимо',r:'Подавитель сигнала',e:{u:-30,d:-3},n:'s11a',e2:{u:10,h:-8},n2:'s11a'}]},
+s11a:{ch:10,cp:1,l:'ПОСЛЕДНИЙ ПРОТОКОЛ',x:'Документы противоречат друг другу. Нужно решить, каким свидетельствам верить, и выбрать порядок: запуск, отключение или изоляция системы. От этого зависит и финальная развилка.',h:'Чем больше улик, тем твёрже выбор.',c:[
+{l:'Довериться записям Оператора-0',e:{t:-6,d:-6,f:'t0'},n:'s12a'},
+{l:'Довериться доктору Еве',e:{t:12,d:6,f:'teva'},n:'s12a'},
+{l:'Довериться архиву и пропускам',r:'pass',e:{d:-6},n:'s12a',e2:{d:3,s:-4},n2:'s12a'}]},
+s12a:{ch:11,cp:2,dg:1,l:'03:17 // СМОТРИТЕЛЬ',x:'Комплекс вернулся к началу ночи. Смотритель стоит в дверях операторской. Его голос — твой: «Если ты слышишь это сообщение…»',h:'Оставь силы на последний выбор.',c:dg('s12b','Спрятаться и слушать','Включить радио и отвлечь его','Броситься к выходу')},
+s12b:{ch:11,l:'03:17 // ФИНАЛЬНОЕ РЕШЕНИЕ',x:'Смотритель отступает. Перед тобой три пути: дверь наружу, пост наблюдателя и пульт перезапуска. Предупреждение из первой записи наконец обретает смысл, но не тот, что ты думал.',h:'То, что ты нашёл, определяет, какие двери откроются.',c:[
+{l:'Идти к выходу',n:s=>s.ds>=60?'e3':'e1'},
+{l:'Занять место Смотрителя и сохранить систему',n:'e2'},
+{l:s=>sec(s)?'Разорвать цикл':'Запустить перезапуск по плану Евы',n:s=>sec(s)?'e4':'e5'}]},
+e1:{end:1,x:'Ты получаешь достаточно доказательств, находишь путь наружу и выбираешься из комплекса. Над лесом светает.\nНа выходе щёлкает рация в кармане. Твой собственный голос: «Смена ещё не окончена».'},
+e2:{end:1,x:'Ты выбираешь сохранить систему. Связь с комплексом замыкается на тебе, шаги становятся тише, а камеры смотрят твоими глазами.\nКто-то новый садится за пульт операторской. Ты стоишь за стеклом и медленно поворачиваешь голову.'},
+e3:{end:1,x:'Выход открыт. Но на плёнках ты видишь свою реконструкцию: личность, собранную из записей и воспоминаний исчезнувшего человека.\nТы стоишь снаружи и не знаешь, кто именно вышел из комплекса.'},
+e4:{end:1,x:'Ты не даёшь комплексу навязать привычный сценарий. Записи гаснут, механизм воспроизведения разрушен, голос из динамика замолкает на полуслове.\nПо-настоящему ли ты свободен — ответа нет. Но следующей смены не будет.'},
+e5:{end:1,x:'Ты принимаешь объяснение Евы и запускаешь перезапуск эксперимента. Свет горит, камеры работают, сигналы чистые.\nЗатем на экране появляется новая дата и сообщение от оператора, который ещё не приступил к работе.'}};
+const sec=s=>s.cl.length>=8&&s.ds<60;
 
-function gen() {
-  for (let x = 0; x < W; x++) {
-    const s = Math.floor(35 + Math.sin(x * 0.04) * 8 + Math.cos(x * 0.01) * 12);
-    surf[x] = s;
-    for (let y = 0; y < H; y++) {
-      let id = 0;
-      if (y >= s) {
-        id = (y === s) ? 2 : (y < s + 5 ? 1 : 3);
-        if (id === 3) {
-          const r = Math.random();
-          if (r < 0.04) id = 6;
-          else if (r < 0.075) id = 7;
-          else if (r < 0.09) id = 11;
-        }
-        if (y > s + 6 && Math.sin(x * 0.25) * Math.cos(y * 0.25) > 0.62) id = 0;
-      }
-      tiles[y * W + x] = id;
-    }
+/* ===== утилиты ===== */
+const cl=x=>Math.max(0,Math.min(100,Math.round(x)));
+const has=r=>S.inv.includes(r)||S.cl.includes(r);
+const nm=r=>CL[r]?CL[r][0]:r;
+const note=t=>S.nt.push(t);
+const gls=s=>{if(!M.gl||S.san>=35)return s;const p=(35-S.san)/150;return s.replace(/[^\s.,:;—«»…\n]/g,c=>Math.random()<p?'▓░█▒'[Math.random()*4|0]:c)};
+const saveM=()=>{M.ts=Date.now();LS('s9meta',M);cset('s9meta',M)};
+const saveS=()=>{S.ts=Date.now();LS('s9save',S);cset('s9save',S)};
+const applyM=()=>{document.documentElement.style.setProperty('--fs',M.fs+'px');document.body.classList.toggle('fx',!!M.gl);if(hum)hum.gain.value=M.amb/100*.04};
+
+/* ===== звук ===== */
+let AC,hum;
+function aud(){if(AC)return;try{AC=new(window.AudioContext||window.webkitAudioContext)();const o=AC.createOscillator(),g=AC.createGain();o.type='sawtooth';o.frequency.value=48;g.gain.value=M.amb/100*.04;o.connect(g).connect(AC.destination);o.start();hum=g}catch(e){}}
+function beep(){aud();if(!AC)return;try{const n=4410,b=AC.createBuffer(1,n,44100),d=b.getChannelData(0);for(let i=0;i<n;i++)d[i]=(Math.random()*2-1)*(1-i/n);const s=AC.createBufferSource(),g=AC.createGain();g.gain.value=M.fx/100*.25;s.buffer=b;s.connect(g).connect(AC.destination);s.start()}catch(e){}}
+
+/* ===== механика ===== */
+function ap(f){
+  const d=DF[S.d];
+  if(f.h)S.hp=cl(S.hp+(f.h<0?f.h*d.h:f.h));
+  if(f.s)S.san=cl(S.san+(f.s<0?f.s*d.s:f.s));
+  if(f.b)S.bat=cl(S.bat+f.b);
+  if(f.u)S.u=cl(S.u+(f.u>0?f.u*d.u:f.u));
+  if(f.d)S.ds=cl(S.ds+f.d);
+  if(f.t)S.tr=cl(S.tr+f.t);
+  [].concat(f.g||[]).forEach(i=>{if(S.inv.length<6)S.inv.push(i);else note('Инвентарь полон. «'+i+'» оставлен.')});
+  if(f.c&&!S.cl.includes(f.c)){S.cl.push(f.c);if(!M.seen.includes(f.c)){M.seen.push(f.c);saveM()}note('АРХИВ: '+CL[f.c][0])}
+  if(f.f)S.fl[f.f]=1;
+}
+function choose(i){
+  beep();
+  const sc=SC[S.sc],c=sc.c[i];let e=c.e||{},n=c.n;
+  if(c.r&&!has(c.r)){e=c.e2||{};n=c.n2||n;note('Не хватило: '+nm(c.r))}
+  ap(e);
+  if(sc.dg&&c.k){
+    const k=c.k,t=S.us[k]||0;S.us[k]=t+1;
+    if(S.d=='hard'&&t>=1){ap({h:-30});note('Смотритель запомнил этот приём.')}
+    else if(S.d=='mid'&&t>=2){ap({h:-15});note('Приём работает хуже: он адаптируется.')}
+    if(k=='hide'&&S.u>70){ap({h:-20});note('Укрытие небезопасно: он проверил шкаф.')}
+    if(k=='run'&&Math.random()<.3&&S.inv.length){note('Потеряно при побеге: '+S.inv.splice(Math.random()*S.inv.length|0,1)[0])}
   }
+  ap({b:-DF[S.d].bt});
+  if(S.bat<=0)ap({s:-4});
+  if(S.u>=100){ap({h:-25});S.u=50;note('Смотритель нашёл тебя.')}
+  if(S.san<=0)ap({h:-10});
+  if(typeof n=='function')n=n(S);
+  if(S.hp<=0)return dead();
+  go(n);
 }
-gen();
-
-// Ультра-маленький персонаж (размером меньше блока: ширина 0.5, высота 1.1)
-const P = {
-  x: W / 2, y: 10, w: 0.5, h: 1.1, vx: 0, vy: 0,
-  on: false, hp: 100, maxHp: 100, armor: 0,
-  face: 1, hurt: 0, sword: 0, pick: 0, swing: 0
-};
-
-let inv = { 8: 15, 9: 10 }, sel = 0, mobs = [], keys = {}, aim = { d: false, x: 0, y: 0, id: -1 }, mine = { x: -1, y: -1, p: 0 }, cd = 0;
-
-const cv = document.getElementById('c'), ctx = cv.getContext('2d');
-let ts = 12, VW = 0, VH = 0, cx = 0, cy = 0; // Маленький размер тайла (ts=12) для максимального обзора экрана
-
-function rs() {
-  cv.width = window.innerWidth; cv.height = window.innerHeight;
-  ctx.imageSmoothingEnabled = false;
-  ts = Math.max(10, Math.floor(cv.width / 36)); // Очень широкий охват камеры
-  VW = cv.width / ts; VH = cv.height / ts;
+function go(id){
+  S.sc=id;const sc=SC[id];
+  if(sc.end){
+    const k=id;if(!M.end.includes(k)){M.end.push(k);saveM()}
+    return finish(id)}
+  if(S.d=='easy'||sc.cp==1||(sc.cp==2&&S.d!='hard')){S.cpt=null;S.cpt=JSON.stringify(S)}
+  saveS();game();
 }
-addEventListener('resize', rs); rs();
-
-// Управление
-const hold = { l: 0, r: 0, j: 0 };
-['l', 'r', 'j'].forEach(k => {
-  const el = document.getElementById('btn-' + k);
-  if (!el) return;
-  el.onpointerdown = e => { hold[k] = 1; el.setPointerCapture(e.pointerId); e.preventDefault(); };
-  el.onpointerup = el.onpointercancel = el.onpointerleave = () => hold[k] = 0;
-});
-
-document.getElementById('btn-a').onclick = () => attack();
-
-function attack() {
-  P.swing = 0.2;
-  const range = 2.0;
-  mobs.forEach(m => {
-    const dist = Math.hypot((m.x + m.w/2) - (P.x + P.w/2), (m.y + m.h/2) - (P.y + P.h/2));
-    if (dist < range) {
-      const dmg = 10 + P.sword * 10;
-      m.hp -= dmg;
-      m.vy = -4; m.vx = P.face * 4;
-      say('Урон мобу: -' + dmg);
-    }
-  });
+function dead(){
+  S.dc=(S.dc||0)+1;
+  app.innerHTML=`<div class=sp></div><h1 class=rd style="font-size:1.6em;letter-spacing:.2em">СИГНАЛ ПОТЕРЯН</h1><p>Связь оборвалась. Оператор не отвечает.</p><button class=b onclick="revive()">Вернуться к контрольной точке</button><button class=b onclick="menu()">В меню</button><div class=sp></div>`;
 }
-
-addEventListener('keydown', e => {
-  keys[e.code] = 1;
-  if (/Digit[1-9]/.test(e.code)) { sel = +e.code.slice(5) - 1; hbRender(); }
-});
-addEventListener('keyup', e => keys[e.code] = 0);
-
-const sc = e => ({ x: e.clientX / ts + cx, y: e.clientY / ts + cy });
-cv.onpointerdown = e => { if (aim.id >= 0) return; aim.id = e.pointerId; aim.d = true; Object.assign(aim, sc(e)); cv.setPointerCapture(e.pointerId); };
-cv.onpointermove = e => { if (e.pointerId == aim.id) Object.assign(aim, sc(e)); };
-cv.onpointerup = cv.onpointercancel = e => { if (e.pointerId == aim.id) { aim.d = false; aim.id = -1; mine.p = 0; } };
-
-function items() {
-  const a = ['sword', 'pick'];
-  Object.keys(inv).map(Number).sort((a,b)=>a-b).forEach(k => { if (inv[k] > 0) a.push(k); });
-  return a;
+function revive(){
+  if(!S.cpt)return menu();
+  const c=S.cpt,dc=S.dc;S=JSON.parse(c);S.cpt=c;S.dc=dc;S.hp=Math.max(S.hp,40);S.san=Math.max(S.san,30);S.u=Math.min(S.u,60);
+  saveS();game();
 }
-
-function hbRender() {
-  const it = items(); if (sel >= it.length) sel = 0;
-  const hb = document.getElementById('hotbar'); hb.innerHTML = '';
-  it.forEach((k, i) => {
-    const d = document.createElement('div');
-    d.className = 'slot' + (i == sel ? ' active' : '');
-    const col = typeof k == 'number' ? (T[k] ? T[k].c : '#9b59d6') : (k == 'sword' ? '#e74c3c' : '#3498db');
-    d.innerHTML = `<i style="background:${col}"></i><u>${typeof k == 'number' ? inv[k] : ''}</u>`;
-    d.onclick = () => { sel = i; hbRender(); };
-    hb.appendChild(d);
-  });
+function finish(id){
+  const sc=SC[id],n=+id.slice(1);
+  S=null;LS('s9save',null);cset('s9save',{ts:Date.now()});
+  app.innerHTML=`<div class=sp></div><div class=loc>КОНЦОВКА ${n} ИЗ 5${n==4?' // СЕКРЕТНАЯ':''}</div><h1 style="font-size:1.8em;letter-spacing:.15em">${ENDS[id]}</h1><p class=tx style="min-height:0">${sc.x}</p><p class=dm>Все концовки доступны на любой сложности.</p><button class=b onclick="diff()">Начать заново</button><button class=b onclick="menu()">В меню</button><div class=sp></div>`;
 }
-hbRender();
-
-function say(t) {
-  const m = document.getElementById('msg'); m.textContent = t;
-  clearTimeout(say.t); say.t = setTimeout(() => m.textContent = '', 2000);
+let tw;
+function typer(el,s,done){
+  clearInterval(tw);let i=0,fin=0;el.textContent='';
+  const d=()=>{if(!fin){fin=1;clearInterval(tw);el.textContent=s;done()}};
+  tw=setInterval(()=>{i+=2;el.textContent=s.slice(0,i);if(i>=s.length)d()},14);
+  el.onclick=d;
+}
+function hud(){
+  const B=(n,v,c)=>`<div>${n} ${v}<div class=bar><i style="width:${v}%;background:${c}"></i></div></div>`;
+  return `<div class=hud>${B('ЗДОРОВЬЕ',S.hp,'#b3261e')}${B('РАССУДОК',S.san,'#7fa6b5')}${B('ФОНАРЬ',S.bat,'#c9a24a')}${B('ВНИМАНИЕ',S.u,'#d4552b')}</div>`;
+}
+function game(){
+  const sc=SC[S.sc];
+  if(S.san<35&&Math.random()<.5)note(FK[Math.random()*FK.length|0]);
+  const nt=S.nt.map(t=>`<div class=nt>${t}</div>`).join('');S.nt=[];
+  const hint=(S.d=='easy'||(S.d=='mid'&&S.san>=70))&&sc.h?`<div class=hint>▸ ${sc.h}</div>`:'';
+  const ch=sc.c.map((c,i)=>{
+    const l=typeof c.l=='function'?c.l(S):c.l;
+    return `<button class=b onclick="choose(${i})">${l}${c.r&&S.d!='hard'?`<small>нужно: ${nm(c.r)}</small>`:''}</button>`}).join('');
+  app.innerHTML=hud()+`<div class=loc>ГЛАВА ${sc.ch+1} // ${CH[sc.ch].toUpperCase()}<br>${sc.l}</div>${nt}<div id=tx class=tx></div><div id=ch class=off>${hint}${ch}</div><div class=sp></div><div class=row><button class=b onclick="inv()">Инвентарь ${S.inv.length}/6</button><button class=b onclick="arch(1)">Архив</button><button class=b onclick="menu()">Меню</button></div>`;
+  typer(document.getElementById('tx'),gls(sc.x),()=>document.getElementById('ch').classList.remove('off'));
+}
+function ov(h){const o=document.createElement('div');o.className='ov';o.id='ov';o.innerHTML='<div>'+h+'<button class=b onclick="document.getElementById(\'ov\').remove()">Закрыть</button></div>';document.body.appendChild(o)}
+function inv(m){
+  const old=document.getElementById('ov');if(old)old.remove();
+  ov(`<div class=loc>ИНВЕНТАРЬ ${S.inv.length}/6</div>${m?`<div class=nt>${m}</div>`:''}`+(S.inv.map((n,i)=>`<button class=b onclick="use(${i})">${n}<small>${IT[n]}</small></button>`).join('')||'<p class=dm>Пусто.</p>'));
+}
+function use(i){
+  const n=S.inv[i];let m=IT[n];
+  if(n=='Батарейка'){S.bat=cl(S.bat+50);S.inv.splice(i,1);m='Фонарь заряжен.'}
+  else if(n=='Аптечка'){S.hp=cl(S.hp+40);S.inv.splice(i,1);m='Раны перевязаны.'}
+  else if(n=='Подавитель сигнала'){S.u=cl(S.u-35);S.inv.splice(i,1);m='Сигналы стихли. Внимание Смотрителя ослабло.'}
+  saveS();
+  const h=document.querySelector('.hud');if(h)h.outerHTML=hud();
+  inv(m);
 }
 
-const REC = [
-  { n: 'Верстак', c: { 8: 5 }, o: [10, 1] },
-  { n: 'Факелы x4', c: { 8: 1, 21: 1 }, o: [9, 4] },
-  { n: 'Железный слиток', c: { 7: 3 }, o: [22, 1] },
-  { n: 'Железный меч', c: { 22: 4, 8: 2 }, type: 's1' },
-  { n: 'Кожаная броня (+15 Защиты)', c: { 20: 5 }, type: 'a15' },
-  { n: 'Железная броня (+30 Защиты)', c: { 22: 8 }, type: 'a30' }
-];
-
-function craftUI() {
-  const p = document.getElementById('panel');
-  p.innerHTML = '<div class="panel-title">ИНВЕНТАРЬ И КРАФТ</div>';
-  REC.forEach(r => {
-    const ok = Object.entries(r.c).every(([k, v]) => (inv[k] || 0) >= v);
-    const d = document.createElement('div'); d.className = 'r';
-    let reqs = Object.entries(r.c).map(([k,v])=> `${ITEMS[k]||'?'}:${v}`).join(', ');
-    d.innerHTML = `<span><b>${r.n}</b><br><small style="color:#aaa">${reqs}</small></span>`;
-    const b = document.createElement('button'); b.textContent = 'Крафт'; b.disabled = !ok;
-    b.onclick = () => {
-      for (const k in r.c) inv[k] -= r.c[k];
-      if (r.type == 's1') P.sword = 1;
-      else if (r.type == 'a15') P.armor = 15;
-      else if (r.type == 'a30') P.armor = 30;
-      else if (r.o) inv[r.o[0]] = (inv[r.o[0]] || 0) + r.o[1];
-      craftUI(); hbRender(); say('Скрафчено: ' + r.n);
-    };
-    d.appendChild(b); p.appendChild(d);
-  });
+/* ===== экраны ===== */
+function menu(){
+  const o=document.getElementById('ov');if(o)o.remove();
+  clearInterval(tw);
+  app.innerHTML=`<div class=sp></div><div class="dm">SECURE CONNECTION // SECTOR-9</div><h1>Э Х О</h1><p>ОПЕРАТОР, ВЫ НА СВЯЗИ?</p><div style="height:14px"></div>
+  ${S?`<button class=b onclick="game()">Продолжить<small>Глава ${SC[S.sc].ch+1}: ${CH[SC[S.sc].ch]} // ${DF[S.d].n}</small></button>`:''}
+  <button class=b onclick="diff()">Новая игра</button><button class=b onclick="arch()">Архив</button><button class=b onclick="sett()">Настройки</button><button class=b onclick="secrets()">Секреты</button>
+  <div class=sp></div><div class=dm>BUILD 0.9.17 // LAST SIGNAL 03:17</div><div class="dm rd">НЕ ОТВЕЧАЙТЕ НА ГОЛОС ИЗ КОРИДОРА</div>`;
+}
+function diff(sel='mid',conf=0){
+  const o=document.getElementById('ov');if(o)o.remove();
+  app.innerHTML=`<div class=loc>ВЫБЕРИТЕ УРОВЕНЬ УГРОЗЫ</div>`+Object.keys(DF).map(k=>`<button class="b ${k==sel?'sel':''}" onclick="diff('${k}')">${DF[k].n}<small>${DF[k].d}</small></button>`).join('')+
+  `<p class=dm>Выбрано: ${DF[sel].n}. Все пять концовок доступны на любом уровне.</p>${S&&!conf?'<p class=rd>Внимание: текущее сохранение будет перезаписано.</p>':''}
+  <button class=b onclick="${S&&!conf?`diff('${sel}',1)`:`start('${sel}')`}">${S&&!conf?'Далее':conf?'Подтвердить: перезаписать сохранение':'Начать'}</button><button class=b onclick="menu()">Назад</button>`;
+}
+function start(d){
+  S={d,sc:'s1a',hp:100,san:100,bat:100,u:0,ds:0,tr:50,inv:d=='easy'?['Батарейка','Батарейка','Аптечка']:d=='mid'?['Батарейка']:[],cl:[],fl:{},us:{},nt:[],cpt:null,dc:0};
+  beep();go('s1a');
+}
+function arch(back){
+  const list=S?S.cl:M.seen;
+  ov(`<div class=loc>АРХИВ${S?'':' // ВСЕ НАЙДЕННЫЕ МАТЕРИАЛЫ'}</div>`+(list.map(k=>`<div class=cl><b>${CL[k][0]}</b><br><span class=dm>${CL[k][1]}</span></div>`).join('')||'<p class=dm>Улики не найдены.</p>')+`<p class=dm>${list.length} из ${Object.keys(CL).length}</p>`);
+}
+function secrets(){
+  ov(`<div class=loc>СЕКРЕТЫ</div>`+Object.keys(ENDS).map((k,i)=>`<div class=cl><b>Концовка ${i+1}${i==3?' (секретная)':''}</b><br><span class=dm>${M.end.includes(k)?ENDS[k]:'???'}</span></div>`).join('')+
+  `<div class=cl><b>Скрытый радиоканал 9</b><br><span class=dm>${M.seen.includes('secret')?'Найден':'???'}</span></div><p class=dm>Секретная концовка требует сопоставить улики из многих глав и не позволить комплексу навязать привычный сценарий.</p>`);
+}
+function setM(k,v){M[k]=v;saveM();applyM()}
+function sett(){
+  const o=document.getElementById('ov');if(o)o.remove();
+  ov(`<div class=loc>НАСТРОЙКИ</div><p>Эффекты <span class=dm>громкость</span></p><input type=range min=0 max=100 value=${M.fx} oninput="setM('fx',+this.value)">
+  <p>Фоновый гул <span class=dm>громкость</span></p><input type=range min=0 max=100 value=${M.amb} oninput="setM('amb',+this.value)">
+  <button class=b onclick="setM('gl',M.gl?0:1);sett()">Интенсивные помехи: ${M.gl?'включены':'отключены'}</button>
+  <p>Размер текста</p><div class=row>${[14,16,19,22].map(n=>`<button class="b ${M.fs==n?'sel':''}" onclick="setM('fs',${n});sett()">${n}</button>`).join('')}</div>`);
 }
 
-document.getElementById('btn-c').onclick = () => {
-  const p = document.getElementById('panel');
-  p.style.display = p.style.display == 'block' ? 'none' : 'block';
-  if (p.style.display == 'block') craftUI();
-};
-
-function hit(e) {
-  for (let y = Math.floor(e.y); y <= Math.floor(e.y + e.h - 0.01); y++)
-    for (let x = Math.floor(e.x); x <= Math.floor(e.x + e.w - 0.01); x++)
-      if (x < 0 || x >= W || y < 0 || y >= H || SOLID.has(tiles[y * W + x])) return true;
-  return false;
-}
-
-let mobTimer = 0;
-function update(dt) {
-  const l = hold.l || keys.KeyA || keys.ArrowLeft, r = hold.r || keys.KeyD || keys.ArrowRight, j = hold.j || keys.Space || keys.KeyW || keys.ArrowUp;
-  const tv = (r - l) * 8; if (tv) P.face = tv > 0 ? 1 : -1;
-  P.vx += (tv - P.vx) * Math.min(1, dt * 20);
-  
-  if (j && P.on) { P.vy = -14; P.on = false; }
-  P.vy = Math.min(P.vy + 45 * dt, 30);
-  P.hurt = Math.max(0, P.hurt - dt);
-  P.swing = Math.max(0, P.swing - dt);
-
-  P.x += P.vx * dt;
-  if (hit(P)) { P.x = P.vx > 0 ? Math.floor(P.x + P.w) - P.w - 0.001 : Math.floor(P.x) + 1.001; P.vx = 0; }
-
-  P.y += P.vy * dt; P.on = false;
-  if (hit(P)) {
-    if (P.vy > 0) { P.y = Math.floor(P.y + P.h) - P.h - 0.001; P.on = true; }
-    else { P.y = Math.floor(P.y) + 1.001; }
-    P.vy = 0;
-  }
-
-  if (P.y > H || P.hp <= 0) { P.x = W / 2; P.y = 10; P.vy = 0; P.hp = 100; say('Возрождение!'); }
-
-  cd -= dt;
-  if (aim.d) {
-    const tx = Math.floor(aim.x), ty = Math.floor(aim.y);
-    const dist = Math.hypot(aim.x - (P.x + P.w / 2), aim.y - (P.y + P.h / 2));
-    const it = items()[sel];
-
-    if (it == 'pick' && dist < 6) {
-      const idx = ty * W + tx;
-      if (tx >= 0 && tx < W && ty >= 0 && ty < H && tiles[idx] > 0) {
-        mine.p += dt;
-        if (mine.p >= 0.25) {
-          const t = tiles[idx]; tiles[idx] = 0;
-          if (T[t] && T[t].d) { inv[T[t].d] = (inv[T[t].d] || 0) + 1; hbRender(); }
-          mine.p = 0;
-        }
-      }
-    } else if (typeof it == 'number' && dist < 6 && cd <= 0 && inv[it] > 0) {
-      const idx = ty * W + tx;
-      if (tx >= 0 && tx < W && ty >= 0 && ty < H && tiles[idx] == 0) {
-        tiles[idx] = it; inv[it]--; cd = 0.12; hbRender();
-      }
-    }
-  }
-
-  // Спавн мобов
-  mobTimer += dt;
-  if (mobTimer > 5 && mobs.length < 5) {
-    mobTimer = 0;
-    const mx = P.x + (Math.random() < 0.5 ? -20 : 20);
-    const my = surf[Math.floor(Math.max(0, Math.min(W-1, mx)))] - 2;
-    if (mx > 2 && mx < W - 2) mobs.push({ x: mx, y: my, w: 0.6, h: 0.8, hp: 20, vx: 0, vy: 0 }); // Ультра-маленький моб
-  }
-
-  mobs = mobs.filter(m => {
-    m.vy = Math.min(m.vy + 40 * dt, 30);
-    m.vx = (P.x > m.x ? 1 : -1) * 2.2;
-    
-    m.x += m.vx * dt;
-    m.y += m.vy * dt;
-
-    if (P.hurt <= 0 && Math.abs(P.x - m.x) < 0.6 && Math.abs(P.y - m.y) < 0.9) {
-      const realDmg = Math.max(2, 10 - P.armor * 0.3);
-      P.hp -= realDmg; P.hurt = 0.8;
-      P.vy = -5; P.vx = (P.x < m.x ? -1 : 1) * 4;
-      say('Урон: -' + Math.floor(realDmg));
-    }
-
-    if (m.hp <= 0) {
-      inv[20] = (inv[20] || 0) + 1;
-      inv[21] = (inv[21] || 0) + 2;
-      hbRender(); say('Моб повержен!');
-      return false;
-    }
-    return Math.abs(m.x - P.x) < 40;
-  });
-}
-
-function draw() {
-  ctx.fillStyle = '#1e293b'; ctx.fillRect(0, 0, cv.width, cv.height);
-
-  cx = Math.max(0, Math.min(W - VW, P.x + P.w / 2 - VW / 2));
-  cy = Math.max(0, Math.min(H - VH, P.y + P.h / 2 - VH / 2));
-
-  const x0 = Math.floor(cx), y0 = Math.floor(cy), x1 = Math.ceil(cx + VW), y1 = Math.ceil(cy + VH);
-
-  // Отрисовка тайлов
-  for (let y = y0; y <= y1; y++) {
-    for (let x = x0; x <= x1; x++) {
-      const t = tiles[y * W + x];
-      if (t > 0) {
-        ctx.fillStyle = T[t] ? T[t].c : '#444';
-        ctx.fillRect(Math.floor((x - cx) * ts), Math.floor((y - cy) * ts), Math.ceil(ts), Math.ceil(ts));
-      }
-    }
-  }
-
-  // Отрисовка маленьких мобов
-  mobs.forEach(m => {
-    ctx.fillStyle = '#2ecc71';
-    ctx.fillRect(Math.floor((m.x - cx) * ts), Math.floor((m.y - cy) * ts), Math.floor(m.w * ts), Math.floor(m.h * ts));
-  });
-
-  // Отрисовка ЧЕТКОГО И УЛЬТРА-МАЛЕНЬКОГО ПЕРСОНАЖА
-  const px = Math.floor((P.x - cx) * ts), py = Math.floor((P.y - cy) * ts);
-  const pw = Math.floor(P.w * ts), ph = Math.floor(P.h * ts);
-
-  if (P.hurt > 0 && Math.floor(Date.now() / 80) % 2) ctx.globalAlpha = 0.4;
-
-  // Тело персонажа
-  ctx.fillStyle = P.armor > 0 ? (P.armor > 20 ? '#bdc3c7' : '#8d6e63') : '#e74c3c';
-  ctx.fillRect(px, py + ph * 0.3, pw, ph * 0.7);
-
-  // Голова
-  ctx.fillStyle = '#ffcc99';
-  ctx.fillRect(px + pw * 0.1, py, pw * 0.8, ph * 0.35);
-
-  // Оружие в руке при ударе
-  if (P.swing > 0) {
-    ctx.fillStyle = P.sword > 0 ? '#bdc3c7' : '#7f8c8d';
-    ctx.fillRect(px + (P.face > 0 ? pw : -pw * 0.8), py + ph * 0.4, pw * 0.8, ph * 0.2);
-  }
-
-  ctx.globalAlpha = 1.0;
-
-  // Обновление интерфейса
-  document.getElementById('hp-fill').style.width = Math.max(0, P.hp) + '%';
-  document.getElementById('hp-txt').textContent = `${Math.max(0, Math.floor(P.hp))} / 100`;
-  document.getElementById('arm-fill').style.width = Math.min(100, (P.armor / 30) * 100) + '%';
-  document.getElementById('arm-txt').textContent = `Защита: ${P.armor}`;
-}
-
-let last = performance.now();
-function loop(n) {
-  const dt = Math.min(0.033, (n - last) / 1000); last = n;
-  update(dt); draw();
-  requestAnimationFrame(loop);
-}
-requestAnimationFrame(loop);
+/* ===== запуск ===== */
+(async()=>{
+  M=Object.assign(M,newer(LS('s9meta'),await cget('s9meta'))||{});
+  const s=newer(LS('s9save'),await cget('s9save'));
+  S=s&&s.sc&&SC[s.sc]&&!SC[s.sc].end?s:null;
+  applyM();menu();
+})();
 </script>
 </body>
 </html>
