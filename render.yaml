@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: pocket-terraria
+    name: sector-9-echo
     runtime: node
     plan: free
     buildCommand: npm install
